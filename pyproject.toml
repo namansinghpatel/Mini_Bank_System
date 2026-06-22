@@ -1,0 +1,10 @@
+[tool.pytest.ini_options]
+testpaths = ["Tests"]
+
+addopts = [
+    "--cov=Backend",
+    "--cov=Database",
+    "--cov=GUI",
+    "--cov-report=term-missing",
+    "--cov-report=html"
+]
