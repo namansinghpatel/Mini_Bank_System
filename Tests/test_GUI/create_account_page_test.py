@@ -2,18 +2,13 @@ from GUI.create_account_page import CreateAccountPage
 
 
 def test_create_account_page_creation(qtbot):
-
     page = CreateAccountPage(None)
-
     qtbot.addWidget(page)
-
     assert page is not None
 
 
 def test_create_account_username_field_exists(qtbot):
-
     page = CreateAccountPage(None)
-
     qtbot.addWidget(page)
 
     assert page.username is not None

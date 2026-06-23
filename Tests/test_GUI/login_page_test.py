@@ -11,11 +11,8 @@ def test_login_page_creation(qtbot):
 
 
 def test_login_username_field_exists(qtbot):
-
     page = LoginPage(None)
-
     qtbot.addWidget(page)
-
     assert page.username is not None
 
 
