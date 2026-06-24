@@ -1,3 +1,5 @@
+import datetime
+
 from Backend.auth_service import create_user, login_user
 from unittest.mock import patch
 from Backend.security import hash_password
@@ -140,3 +142,42 @@ def test_login_locked_account(mock_db):
     success, message = login_user("prashant", "password123")
     assert not success
     assert "Account locked" in message
+
+
+@patch("Backend.auth_service.sqlitedb")
+def test_login_locks_account_after_third_attempt(mock_db):
+    mock_db.get_locked_until.return_value = None
+    mock_db.get_user_password_hash.return_value = hash_password("password123")
+    mock_db.get_failed_attempts.return_value = 2
+    success, message = login_user("prashant", "wrongpassword")
+    assert not success
+    assert (
+        message == "Account locked for 1 minute due to multiple failed login attempts."
+    )
+    mock_db.update_failed_attempts.assert_called_once_with("prashant", 3)
+    mock_db.lock_user.assert_called_once()
+
+
+@patch("Backend.auth_service.sqlitedb")
+def test_lock_user_called_after_three_failures(mock_db):
+    mock_db.get_locked_until.return_value = None
+    mock_db.get_user_password_hash.return_value = hash_password("password123")
+    mock_db.get_failed_attempts.return_value = 2
+    login_user("prashant", "wrongpassword")
+    assert mock_db.lock_user.called
+
+
+@patch("Backend.auth_service.sqlitedb")
+def test_lock_user_receives_timestamp(mock_db):
+    mock_db.get_locked_until.return_value = None
+    mock_db.get_user_password_hash.return_value = hash_password("password123")
+    mock_db.get_failed_attempts.return_value = 2
+    login_user("prashant", "wrongpassword")
+    args = mock_db.lock_user.call_args
+    username = args[0][0]
+    timestamp = args[0][1]
+    assert username == "prashant"
+    assert isinstance(timestamp, str)
+
+
+
