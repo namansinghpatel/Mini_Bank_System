@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 from GUI.login_page import LoginPage
 
 
@@ -17,3 +19,74 @@ def test_login_password_field_exists(qtbot):
     page = LoginPage(None)
     qtbot.addWidget(page)
     assert page.password is not None
+
+
+@patch("GUI.login_page.login_user")
+@patch("GUI.login_page.QMessageBox.information")
+def test_login_success(
+    mock_information,
+    mock_login_user,
+    qtbot,
+):
+    mock_stack = MagicMock()
+    mock_login_user.return_value = (
+        True,
+        "Login Successful",
+    )
+    page = LoginPage(mock_stack)
+    qtbot.addWidget(page)
+    page.username.setText("prashant")
+    page.password.setText("password123")
+    page.login_clicked()
+    mock_information.assert_called_once_with(
+        page,
+        "Success",
+        "Login Successful",
+    )
+    mock_stack.setCurrentIndex.assert_called_once_with(2)
+
+
+@patch("GUI.login_page.login_user")
+@patch("GUI.login_page.QMessageBox.warning")
+def test_login_failure(
+    mock_warning,
+    mock_login_user,
+    qtbot,
+):
+    mock_stack = MagicMock()
+    mock_login_user.return_value = (
+        False,
+        "Invalid Username or Password",
+    )
+    page = LoginPage(mock_stack)
+    qtbot.addWidget(page)
+    page.username.setText("prashant")
+    page.password.setText("wrongpassword")
+    page.login_clicked()
+    mock_warning.assert_called_once_with(
+        page,
+        "Login Failed",
+        "Invalid Username or Password",
+    )
+
+
+def test_create_account_clicked(qtbot):
+    mock_stack = MagicMock()
+    page = LoginPage(mock_stack)
+    qtbot.addWidget(page)
+    page.create_account_clicked()
+    mock_stack.setCurrentIndex.assert_called_once_with(1)
+
+
+@patch("GUI.login_page.QApplication.quit")
+def test_exit_application(
+    mock_quit,
+    qtbot,
+):
+    page = LoginPage(None)
+    qtbot.addWidget(page)
+    page.exit_application()
+    mock_quit.assert_called_once()
+
+
+
