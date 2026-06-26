@@ -68,10 +68,15 @@ def test_create_user_database_failure(mock_db):
     mock_db.user_exists.return_value = False
     mock_db.create_user.side_effect = Exception("Database Down")
     try:
-        create_user("new_user", "password123", "password123")
-        assert False
+        create_user(
+            "new_user",
+            "password123",
+            "password123",
+        )
     except Exception as e:
         assert str(e) == "Database Down"
+        return
+    pytest.fail("Expected Exception was not raised")
 
 
 @patch("Backend.auth_service.sqlitedb")
@@ -178,6 +183,3 @@ def test_lock_user_receives_timestamp(mock_db):
     timestamp = args[0][1]
     assert username == "prashant"
     assert isinstance(timestamp, str)
-
-
-

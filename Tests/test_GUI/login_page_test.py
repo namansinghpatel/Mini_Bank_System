@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
-
 from GUI.login_page import LoginPage
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QLineEdit
 
 
 def test_login_page_creation(qtbot):
@@ -89,4 +90,20 @@ def test_exit_application(
     mock_quit.assert_called_once()
 
 
+def test_show_password_button_click(qtbot):
+    page = LoginPage(None)
+    qtbot.addWidget(page)
+    page.password.setEchoMode(QLineEdit.EchoMode.Password)
+    qtbot.mouseClick(page.show_password_btn, Qt.MouseButton.LeftButton)
+    assert page.password.echoMode() == QLineEdit.EchoMode.Normal
+    assert page.show_password_btn.text() == "🙈"
 
+
+def test_hide_password_button_click(qtbot):
+    page = LoginPage(None)
+    qtbot.addWidget(page)
+    page.password.setEchoMode(QLineEdit.EchoMode.Normal)
+    page.show_password_btn.setText("🙈")
+    qtbot.mouseClick(page.show_password_btn, Qt.MouseButton.LeftButton)
+    assert page.password.echoMode() == QLineEdit.EchoMode.Password
+    assert page.show_password_btn.text() == "👁"
