@@ -75,11 +75,11 @@ class LoginPage(QWidget):
 
         password = self.password.text()
 
-        success, message = login_user(username, password)
+        success, result = login_user(username,password,     )
 
         if success:
 
-            QMessageBox.information(self, "Success", message)
+            QMessageBox.information(self, "Success", result["message"])
 
             self.stack.setCurrentIndex(2)
 

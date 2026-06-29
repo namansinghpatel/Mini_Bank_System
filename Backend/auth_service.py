@@ -3,6 +3,7 @@ from Database.mongodb import mongodb
 from Database.sqlitedb import sqlitedb
 from Backend.security import hash_password, verify_password
 from datetime import datetime, timedelta
+from Backend.account_service import generate_account_number
 
 
 def create_user(username, password, re_password):
@@ -29,9 +30,10 @@ def create_user(username, password, re_password):
     # -------------------
     # Create User
     # -------------------
-    password_hash = hash_password(password)
-    sqlitedb.create_user(username, password_hash)
-    return (True, "Account Created Successfully")
+    hashed_password = hash_password(password)
+    account_number = generate_account_number()
+    sqlitedb.create_user(account_number, username, hashed_password)
+    return (True,"Account Created Successfully")
 
 
 def login_user(username, password):
@@ -59,7 +61,7 @@ def login_user(username, password):
     stored_hash = sqlitedb.get_user_password_hash(username)
     if stored_hash is None:
         return (False, "Invalid Username or Password")
-        
+
     # -------------------------
     # Verify Password
     # -------------------------
@@ -85,4 +87,13 @@ def login_user(username, password):
     # Successful Login
     # -------------------------
     sqlitedb.reset_login_attempts(username)
-    return (True, "Login Successful")
+    account_number = sqlitedb.get_account_number(username)
+    return (
+        True,
+        {
+            "message": "Login Successful",
+            "username": username,
+            "account_number": account_number,
+        },
+    )
+

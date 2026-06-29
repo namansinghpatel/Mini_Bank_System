@@ -15,8 +15,10 @@ class SQLiteDB:
             CREATE TABLE IF NOT EXISTS users
             (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE Not Null,
-                password TEXT Not Null,
+                account_number TEXT UNIQUE NOT NULL,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                balance REAL DEFAULT 0.0,
                 failed_attempts INTEGER DEFAULT 0,
                 locked_until TEXT
             )
@@ -34,17 +36,22 @@ class SQLiteDB:
         )
         return self.cursor.fetchone() is not None
 
-    def create_user(self, username, password):
+    def create_user(self, account_number, username, password):
         self.cursor.execute(
             """
-            INSERT INTO users
+        INSERT INTO users
+        (
+            account_number,
+            username,
+            password
+        )
+        VALUES (?, ?, ?)
+        """,
             (
+                account_number,
                 username,
-                password
-            )
-            VALUES (?, ?)
-            """,
-            (username, password),
+                password,
+            ),
         )
         self.conn.commit()
         return True
@@ -134,5 +141,32 @@ class SQLiteDB:
         )
         self.conn.commit()
 
+    def account_number_exists(self, account_number):
+        self.cursor.execute(
+            """
+            SELECT account_number
+            FROM users
+            WHERE account_number = ?
+            """,
+            (account_number,),
+        )
+        return self.cursor.fetchone() is not None
+    
+    def get_account_number(self, username):
+        self.cursor.execute(
+            """
+            SELECT account_number
+            FROM users
+            WHERE username = ?
+            """,
+            (username,),
+        )
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]
+        return None
+
 
 sqlitedb = SQLiteDB()
+
+
