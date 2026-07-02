@@ -219,3 +219,26 @@ def test_authenticate_user_wrong_password(test_db):
     success, message = test_db.authenticate_user("prashant", "wrongpassword")
     assert not success
     assert message == "Invalid Username or Password"
+
+
+def test_account_number_exists_true(test_db):
+    test_db.create_user(
+        "1234567",
+        "prashant",
+        "password123",
+    )
+    assert test_db.account_number_exists("1234567")
+
+
+def test_account_number_exists_false(test_db):
+    assert not test_db.account_number_exists("9999999")
+
+
+def test_get_account_number(test_db):
+    test_db.create_user(
+        "1234567",
+        "prashant",
+        "password123",
+    )
+    account_number = test_db.get_account_number("prashant")
+    assert account_number == "1234567"

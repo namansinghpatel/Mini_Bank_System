@@ -183,3 +183,40 @@ def test_lock_user_receives_timestamp(mock_db):
     timestamp = args[0][1]
     assert username == "prashant"
     assert isinstance(timestamp, str)
+
+
+@patch("Backend.auth_service.generate_account_number")
+@patch("Backend.auth_service.sqlitedb")
+def test_create_user_generates_account_number(
+    mock_db,
+    mock_generate_account_number,
+):
+    mock_db.user_exists.return_value = False
+    mock_generate_account_number.return_value = "1234567"
+    success, message = create_user(
+        "prashant",
+        "password123",
+        "password123",
+    )
+    assert success
+    mock_generate_account_number.assert_called_once()
+    mock_db.create_user.assert_called_once()
+
+
+@patch("Backend.auth_service.generate_account_number")
+@patch("Backend.auth_service.sqlitedb")
+def test_create_user_stores_generated_account_number(
+    mock_db,
+    mock_generate_account_number,
+):
+    mock_db.user_exists.return_value = False
+    mock_generate_account_number.return_value = "7654321"
+    success, _ = create_user(
+        "prashant",
+        "password123",
+        "password123",
+    )
+    args = mock_db.create_user.call_args[0]
+    assert args[0] == "7654321"
+    assert args[1] == "prashant"
+    assert success
