@@ -81,12 +81,18 @@ def test_create_user_database_failure(mock_db):
 
 @patch("Backend.auth_service.sqlitedb")
 def test_login_success(mock_db):
+    hashed_password = hash_password("password123")
     mock_db.get_locked_until.return_value = None
-    mock_db.get_user_password_hash.return_value = hash_password("password123")
-    success, message = login_user("login_user", "password123")
+    mock_db.get_user_password_hash.return_value = hashed_password
+    mock_db.get_account_number.return_value = "1234567"
+    success, result = login_user("login_user","password123",)
     assert success
-    assert message == "Login Successful"
-    mock_db.reset_login_attempts.assert_called_once_with("login_user")
+    assert result == {
+        "message": "Login Successful",
+        "username": "login_user",
+        "account_number": "1234567",
+    }
+    mock_db.get_account_number.assert_called_once_with("login_user")
 
 
 @patch("Backend.auth_service.sqlitedb")
@@ -185,22 +191,34 @@ def test_lock_user_receives_timestamp(mock_db):
     assert isinstance(timestamp, str)
 
 
+from unittest.mock import patch
+
+from Backend.auth_service import create_user
+
+
 @patch("Backend.auth_service.generate_account_number")
 @patch("Backend.auth_service.sqlitedb")
-def test_create_user_generates_account_number(
+def test_create_user_success(
     mock_db,
     mock_generate_account_number,
 ):
     mock_db.user_exists.return_value = False
     mock_generate_account_number.return_value = "1234567"
     success, message = create_user(
-        "prashant",
+        "new_user",
         "password123",
         "password123",
     )
     assert success
+    assert message == ("Account Created Successfully")
     mock_generate_account_number.assert_called_once()
+    mock_db.user_exists.assert_called_once_with("new_user")
     mock_db.create_user.assert_called_once()
+    args = mock_db.create_user.call_args[0]
+    assert args[0] == "1234567"
+    assert args[1] == "new_user"
+    # Password must be hashed
+    assert args[2] != "password123"
 
 
 @patch("Backend.auth_service.generate_account_number")

@@ -1,3 +1,5 @@
+from unittest import result
+
 from PyQt6.QtWidgets import (
     QWidget,
     QLabel,
@@ -45,54 +47,39 @@ class LoginPage(QWidget):
         self.show_password_btn.clicked.connect(self.toggle_password)
 
         login_btn = QPushButton("Login")
-
         create_btn = QPushButton("Create New Account")
-
         login_btn.clicked.connect(self.login_clicked)
-
         create_btn.clicked.connect(self.create_account_clicked)
-
         exit_btn = QPushButton("❌ Exit")
         exit_btn.clicked.connect(self.exit_application)
-
         layout.addWidget(title)
         layout.addWidget(self.username)
-
         password_layout = QHBoxLayout()
         password_layout.addWidget(self.password)
         password_layout.addWidget(self.show_password_btn)
-
         layout.addLayout(password_layout)
         layout.addWidget(login_btn)
         layout.addWidget(create_btn)
         layout.addWidget(exit_btn)
-
         self.setLayout(layout)
 
     def login_clicked(self):
-
         username = self.username.text()
-
         password = self.password.text()
-
-        success, result = login_user(username,password,     )
-
+        success, result = login_user(
+            username,
+            password,
+        )
         if success:
-
             QMessageBox.information(self, "Success", result["message"])
-
             self.stack.setCurrentIndex(2)
-
         else:
-
-            QMessageBox.warning(self, "Login Failed", message)
+            QMessageBox.warning(self,"Login Failed",result,)
 
     def create_account_clicked(self):
-
         self.stack.setCurrentIndex(1)
 
     def exit_application(self):
-
         QApplication.quit()
 
     def toggle_password(self):

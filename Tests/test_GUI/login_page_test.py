@@ -32,7 +32,11 @@ def test_login_success(
     mock_stack = MagicMock()
     mock_login_user.return_value = (
         True,
-        "Login Successful",
+        {
+            "message": "Login Successful",
+            "username": "prashant",
+            "account_number": "1234567",
+        },
     )
     page = LoginPage(mock_stack)
     qtbot.addWidget(page)
@@ -43,6 +47,11 @@ def test_login_success(
         page,
         "Success",
         "Login Successful",
+    )
+    mock_stack.widget.assert_called_once_with(2)
+    mock_stack.widget(2).set_user_details.assert_called_once_with(
+        "prashant",
+        "1234567",
     )
     mock_stack.setCurrentIndex.assert_called_once_with(2)
 
@@ -69,6 +78,7 @@ def test_login_failure(
         "Login Failed",
         "Invalid Username or Password",
     )
+    mock_stack.setCurrentIndex.assert_not_called()
 
 
 def test_create_account_clicked(qtbot):

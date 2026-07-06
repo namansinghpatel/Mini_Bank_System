@@ -7,12 +7,17 @@ def test_create_user(test_db):
         """
         INSERT INTO users
         (
+            account_number,
             username,
             password
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         """,
-        ("user1", "password123"),
+        (
+            "1234567",
+            "user1",
+            "password123",
+        ),
     )
     test_db.conn.commit()
     cursor.execute(
@@ -43,12 +48,17 @@ def test_user_count_one(test_db):
         """
         INSERT INTO users
         (
+            account_number,
             username,
             password
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         """,
-        ("user1", "password123"),
+        (
+            "1234567",
+            "user1",
+            "password123",
+        ),
     )
     test_db.conn.commit()
     cursor.execute("""
@@ -61,15 +71,32 @@ def test_user_count_one(test_db):
 
 def test_multiple_users(test_db):
     cursor = test_db.cursor
-    users = [("user1", "pass1pass"), ("user2", "pass2pass"), ("user3", "pass3pass")]
+    users = [
+        (
+            "1234567",
+            "user1",
+            "pass1pass",
+        ),
+        (
+            "2345678",
+            "user2",
+            "pass2pass",
+        ),
+        (
+            "3456789",
+            "user3",
+            "pass3pass",
+        ),
+    ]
     cursor.executemany(
         """
         INSERT INTO users
         (
+            account_number,
             username,
             password
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         """,
         users,
     )
@@ -88,12 +115,17 @@ def test_find_existing_user(test_db):
         """
         INSERT INTO users
         (
+            account_number,
             username,
             password
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         """,
-        ("prashant", "password123"),
+        (
+            "1234567",
+            "prashant",
+            "password123",
+        ),
     )
     test_db.conn.commit()
     cursor.execute(

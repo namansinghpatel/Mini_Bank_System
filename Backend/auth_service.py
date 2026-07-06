@@ -12,28 +12,47 @@ def create_user(username, password, re_password):
     # -------------------
     valid, message = validate_username(username)
     if not valid:
-        return (False, message)
-
+        return False, message
     # -------------------
     # Password Validation
     # -------------------
-    valid, message = validate_passwords(password, re_password)
+    valid, message = validate_passwords(
+        password,
+        re_password,
+    )
     if not valid:
-        return (False, message)
-
+        return False, message
     # -------------------
     # Username Exists?
     # -------------------
     if sqlitedb.user_exists(username):
-        return (False, "Username already exists")
-
+        return (
+            False,
+            "Username already exists",
+        )
+    # -------------------
+    # Hash Password
+    # -------------------
+    hashed_password = hash_password(password)
+    # -------------------
+    # Generate Account Number
+    # -------------------
+    account_number = generate_account_number()
     # -------------------
     # Create User
     # -------------------
-    hashed_password = hash_password(password)
-    account_number = generate_account_number()
-    sqlitedb.create_user(account_number, username, hashed_password)
-    return (True,"Account Created Successfully")
+    sqlitedb.create_user(
+        account_number,
+        username,
+        hashed_password,
+    )
+    # -------------------
+    # Success
+    # -------------------
+    return (
+        True,
+        "Account Created Successfully",
+    )
 
 
 def login_user(username, password):
@@ -96,4 +115,3 @@ def login_user(username, password):
             "account_number": account_number,
         },
     )
-
