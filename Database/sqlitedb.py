@@ -151,7 +151,7 @@ class SQLiteDB:
             (account_number,),
         )
         return self.cursor.fetchone() is not None
-    
+
     def get_account_number(self, username):
         self.cursor.execute(
             """
@@ -166,7 +166,19 @@ class SQLiteDB:
             return result[0]
         return None
 
+    def get_balance(self, account_number):
+        self.cursor.execute(
+            """
+            SELECT balance
+            FROM users
+            WHERE account_number = ?
+            """,
+            (account_number,),
+        )
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]
+        return None
+
 
 sqlitedb = SQLiteDB()
-
-
