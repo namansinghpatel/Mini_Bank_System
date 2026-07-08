@@ -180,5 +180,20 @@ class SQLiteDB:
             return result[0]
         return None
 
+    def deposit_money(self, account_number, amount):
+        self.cursor.execute(
+            """
+            UPDATE users
+            SET balance = balance + ?
+            WHERE account_number = ?
+            """,
+            (
+                amount,
+                account_number,
+            ),
+        )
+        self.conn.commit()
+        return self.cursor.rowcount > 0
+
 
 sqlitedb = SQLiteDB()

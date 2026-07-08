@@ -72,6 +72,7 @@ class WelcomePage(QWidget):
         # Deposit Button
         # ======================================================
         self.deposit_btn = QPushButton("💵 Deposit")
+        self.deposit_btn.clicked.connect(self.deposit_clicked)
         # ======================================================
         # Withdraw Button
         # ======================================================
@@ -168,3 +169,10 @@ class WelcomePage(QWidget):
         balance_page.load_balance(self.account_number)
         # Open Balance Page
         self.stack.setCurrentIndex(3)
+
+    def deposit_clicked(self):
+        deposit_page = self.stack.widget(4)
+        deposit_page.set_account(
+            self.account_number
+        )
+        self.stack.setCurrentIndex(4)

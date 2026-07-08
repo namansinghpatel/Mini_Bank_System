@@ -19,5 +19,39 @@ def get_account_balance(account_number):
     return (
         True,
         balance,
-        "Successful",
+    )
+
+
+def deposit_money(account_number, amount):
+    # -------------------------
+    # Validate Amount
+    # -------------------------
+    try:
+        amount = float(amount)
+    except ValueError:
+        return (
+            False,
+            "Please enter a valid amount.",
+        )
+    if amount <= 0:
+        return (
+            False,
+            "Amount must be greater than zero.",
+        )
+    # -------------------------
+    # Deposit
+    # -------------------------
+
+    success = sqlitedb.deposit_money(
+        account_number,
+        amount,
+    )
+    if not success:
+        return (
+            False,
+            "Account not found.",
+        )
+    return (
+        True,
+        f"₹{amount:.2f} deposited successfully.",
     )
