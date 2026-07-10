@@ -66,31 +66,17 @@ class LoginPage(QWidget):
     def login_clicked(self):
         username = self.username.text()
         password = self.password.text()
-        success, result = login_user(
-            username,
-            password,
-        )
+        success, result = login_user(username, password)
         if success:
-            QMessageBox.information(
-                self,
-                "Success",
-                result["message"],
-            )
+            QMessageBox.information(self, "Success", result["message"])
             # Get Welcome Page
             welcome_page = self.stack.widget(2)
             # Pass logged-in user details
-            welcome_page.set_user_details(
-                result["username"],
-                result["account_number"],
-            )
+            welcome_page.set_user_details(result["username"], result["account_number"])
             # Open Welcome Page
             self.stack.setCurrentIndex(2)
         else:
-            QMessageBox.warning(
-                self,
-                "Login Failed",
-                result,
-            )
+            QMessageBox.warning(self, "Login Failed", result)
 
     def create_account_clicked(self):
         self.stack.setCurrentIndex(1)

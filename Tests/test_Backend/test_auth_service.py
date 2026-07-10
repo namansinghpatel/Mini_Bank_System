@@ -68,11 +68,7 @@ def test_create_user_database_failure(mock_db):
     mock_db.user_exists.return_value = False
     mock_db.create_user.side_effect = Exception("Database Down")
     try:
-        create_user(
-            "new_user",
-            "password123",
-            "password123",
-        )
+        create_user("new_user", "password123", "password123")
     except Exception as e:
         assert str(e) == "Database Down"
         return
@@ -85,7 +81,10 @@ def test_login_success(mock_db):
     mock_db.get_locked_until.return_value = None
     mock_db.get_user_password_hash.return_value = hashed_password
     mock_db.get_account_number.return_value = "1234567"
-    success, result = login_user("login_user","password123",)
+    success, result = login_user(
+        "login_user",
+        "password123",
+    )
     assert success
     assert result == {
         "message": "Login Successful",
@@ -204,11 +203,7 @@ def test_create_user_success(
 ):
     mock_db.user_exists.return_value = False
     mock_generate_account_number.return_value = "1234567"
-    success, message = create_user(
-        "new_user",
-        "password123",
-        "password123",
-    )
+    success, message = create_user("new_user", "password123", "password123")
     assert success
     assert message == ("Account Created Successfully")
     mock_generate_account_number.assert_called_once()
@@ -229,11 +224,7 @@ def test_create_user_stores_generated_account_number(
 ):
     mock_db.user_exists.return_value = False
     mock_generate_account_number.return_value = "7654321"
-    success, _ = create_user(
-        "prashant",
-        "password123",
-        "password123",
-    )
+    success, _ = create_user("prashant", "password123", "password123")
     args = mock_db.create_user.call_args[0]
     assert args[0] == "7654321"
     assert args[1] == "prashant"

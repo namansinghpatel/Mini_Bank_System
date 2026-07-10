@@ -1,11 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QWidget,
-    QLabel,
-    QPushButton,
-    QVBoxLayout,
-    QGridLayout,
-)
+from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout
 
 
 class WelcomePage(QWidget):
@@ -17,12 +11,8 @@ class WelcomePage(QWidget):
         self.username = None
         self.account_number = None
         self.setWindowTitle("XYZ Banking System")
-        self.setMinimumSize(
-            800,
-            600,
-        )
+        self.setMinimumSize(800, 600)
         self.setup_ui()
-
 
     def setup_ui(self):
         # ======================================================
@@ -110,26 +100,10 @@ class WelcomePage(QWidget):
         # ======================================================
         # Add Buttons To Grid
         # ======================================================
-        grid.addWidget(
-            self.check_balance_btn,
-            0,
-            0,
-        )
-        grid.addWidget(
-            self.deposit_btn,
-            0,
-            1,
-        )
-        grid.addWidget(
-            self.withdraw_btn,
-            1,
-            0,
-        )
-        grid.addWidget(
-            self.transfer_btn,
-            1,
-            1,
-        )
+        grid.addWidget(self.check_balance_btn, 0, 0)
+        grid.addWidget(self.deposit_btn, 0, 1)
+        grid.addWidget(self.withdraw_btn, 1, 0)
+        grid.addWidget(self.transfer_btn, 1, 1)
         grid.setHorizontalSpacing(25)
         grid.setVerticalSpacing(25)
         # ======================================================
@@ -142,15 +116,12 @@ class WelcomePage(QWidget):
         main_layout.addLayout(grid)
         main_layout.addStretch()
         self.setLayout(main_layout)
+
     # ==========================================================
     # Set Logged-In User Details
     # ==========================================================
 
-    def set_user_details(
-        self,
-        username,
-        account_number,
-    ):
+    def set_user_details(self, username, account_number):
         # Store user details
         self.username = username
         self.account_number = account_number
@@ -158,6 +129,7 @@ class WelcomePage(QWidget):
         self.username_label.setText(f"👤 Username : {username}")
         # Update account number label
         self.account_number_label.setText(f"🏦 Account Number : {account_number}")
+
     # ==========================================================
     # Check Balance Button Clicked
     # ==========================================================
@@ -172,7 +144,5 @@ class WelcomePage(QWidget):
 
     def deposit_clicked(self):
         deposit_page = self.stack.widget(4)
-        deposit_page.set_account(
-            self.account_number
-        )
+        deposit_page.set_account(self.account_number)
         self.stack.setCurrentIndex(4)

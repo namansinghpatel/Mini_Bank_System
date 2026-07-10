@@ -19,18 +19,9 @@ def test_generate_account_number_checks_database(mock_db):
 
 @patch("Backend.account_service.random.randint")
 @patch("Backend.account_service.sqlitedb")
-def test_generate_account_number_duplicate(
-    mock_db,
-    mock_randint,
-):
-    mock_randint.side_effect = [
-        1234567,
-        7654321,
-    ]
-    mock_db.account_number_exists.side_effect = [
-        True,
-        False,
-    ]
+def test_generate_account_number_duplicate(mock_db, mock_randint):
+    mock_randint.side_effect = [1234567, 7654321]
+    mock_db.account_number_exists.side_effect = [True, False]
     account_number = generate_account_number()
     assert account_number == "7654321"
     assert mock_db.account_number_exists.call_count == 2

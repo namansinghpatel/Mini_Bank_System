@@ -12,14 +12,8 @@ def generate_account_number():
 def get_account_balance(account_number):
     balance = sqlitedb.get_balance(account_number)
     if balance is None:
-        return (
-            False,
-            "Account not found",
-        )
-    return (
-        True,
-        balance,
-    )
+        return (False, "Account not found")
+    return (True, balance)
 
 
 def deposit_money(account_number, amount):
@@ -29,28 +23,16 @@ def deposit_money(account_number, amount):
     try:
         amount = float(amount)
     except ValueError:
-        return (
-            False,
-            "Please enter a valid amount.",
-        )
+        return (False, "Please enter a valid amount.")
     if amount <= 0:
-        return (
-            False,
-            "Amount must be greater than zero.",
-        )
+        return (False, "Amount must be greater than zero.")
     # -------------------------
     # Deposit
     # -------------------------
 
-    success = sqlitedb.deposit_money(
-        account_number,
-        amount,
-    )
+    success = sqlitedb.deposit_money(account_number, amount)
     if not success:
-        return (
-            False,
-            "Account not found.",
-        )
+        return (False, "Account not found.")
     return (
         True,
         f"₹{amount:.2f} deposited successfully.",

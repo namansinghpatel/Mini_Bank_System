@@ -47,11 +47,7 @@ class SQLiteDB:
         )
         VALUES (?, ?, ?)
         """,
-            (
-                account_number,
-                username,
-                password,
-            ),
+            (account_number, username, password),
         )
         self.conn.commit()
         return True
@@ -187,10 +183,7 @@ class SQLiteDB:
             SET balance = balance + ?
             WHERE account_number = ?
             """,
-            (
-                amount,
-                account_number,
-            ),
+            (amount, account_number),
         )
         self.conn.commit()
         return self.cursor.rowcount > 0

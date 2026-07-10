@@ -1,14 +1,6 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QWidget,
-    QLabel,
-    QPushButton,
-    QVBoxLayout,
-    QMessageBox,
-)
-from Backend.account_service import (
-    get_account_balance,
-)
+from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QMessageBox
+from Backend.account_service import get_account_balance
 
 
 class BalancePage(QWidget):
@@ -18,7 +10,6 @@ class BalancePage(QWidget):
         self.stack = stack
         self.account_number = None
         self.setup_ui()
-
 
     def setup_ui(self):
         # --------------------------------
@@ -48,10 +39,7 @@ class BalancePage(QWidget):
         # Back Button
         # --------------------------------
         self.back_btn = QPushButton("⬅ Back")
-        self.back_btn.setMinimumSize(
-            200,
-            50,
-        )
+        self.back_btn.setMinimumSize(200, 50)
         self.back_btn.setStyleSheet("""
             QPushButton {
                 background-color: #1565C0;
@@ -79,29 +67,22 @@ class BalancePage(QWidget):
         )
         layout.addStretch()
         self.setLayout(layout)
+
     # --------------------------------
     # Load Balance
     # --------------------------------
 
-
-    def load_balance(
-        self,
-        account_number,
-    ):
+    def load_balance(self, account_number):
         self.account_number = account_number
         success, result = get_account_balance(account_number)
         if success:
             self.balance_label.setText(f"₹{result:.2f}")
         else:
-            QMessageBox.warning(
-                self,
-                "Balance Error",
-                result,
-            )
+            QMessageBox.warning(self, "Balance Error", result)
+
     # --------------------------------
     # Back Button
     # --------------------------------
-
 
     def back_clicked(self):
         self.stack.setCurrentIndex(2)

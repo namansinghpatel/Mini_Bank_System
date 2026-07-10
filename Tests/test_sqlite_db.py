@@ -1,5 +1,6 @@
 from Backend.security import hash_password
 
+
 def test_create_user(test_db):
     cursor = test_db.cursor
     cursor.execute(
@@ -12,11 +13,7 @@ def test_create_user(test_db):
         )
         VALUES (?, ?, ?)
         """,
-        (
-            "1234567",
-            "user1",
-            "password123",
-        ),
+        ("1234567", "user1", "password123"),
     )
     test_db.conn.commit()
     cursor.execute(
@@ -53,11 +50,7 @@ def test_user_count_one(test_db):
         )
         VALUES (?, ?, ?)
         """,
-        (
-            "1234567",
-            "user1",
-            "password123",
-        ),
+        ("1234567", "user1", "password123"),
     )
     test_db.conn.commit()
     cursor.execute("""
@@ -71,21 +64,9 @@ def test_user_count_one(test_db):
 def test_multiple_users(test_db):
     cursor = test_db.cursor
     users = [
-        (
-            "1234567",
-            "user1",
-            "pass1pass",
-        ),
-        (
-            "2345678",
-            "user2",
-            "pass2pass",
-        ),
-        (
-            "3456789",
-            "user3",
-            "pass3pass",
-        ),
+        ("1234567", "user1", "pass1pass"),
+        ("2345678", "user2", "pass2pass"),
+        ("3456789", "user3", "pass3pass"),
     ]
     cursor.executemany(
         """
@@ -120,11 +101,7 @@ def test_find_existing_user(test_db):
         )
         VALUES (?, ?, ?)
         """,
-        (
-            "1234567",
-            "prashant",
-            "password123",
-        ),
+        ("1234567", "prashant", "password123"),
     )
     test_db.conn.commit()
     cursor.execute(
@@ -154,32 +131,20 @@ def test_find_non_existing_user(test_db):
 
 
 def test_get_failed_attempts_default(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     attempts = test_db.get_failed_attempts("prashant")
     assert attempts == 0
 
 
 def test_update_failed_attempts(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     test_db.update_failed_attempts("prashant", 2)
     attempts = test_db.get_failed_attempts("prashant")
     assert attempts == 2
 
 
 def test_update_failed_attempts_multiple_times(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     test_db.update_failed_attempts("prashant", 1)
     test_db.update_failed_attempts("prashant", 2)
     test_db.update_failed_attempts("prashant", 3)
@@ -188,41 +153,23 @@ def test_update_failed_attempts_multiple_times(test_db):
 
 
 def test_get_locked_until_default(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     locked_until = test_db.get_locked_until("prashant")
     assert locked_until is None
 
 
 def test_lock_user(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     lock_time = "2099-01-01T00:00:00"
-    test_db.lock_user(
-        "prashant",
-        lock_time,
-    )
+    test_db.lock_user("prashant", lock_time)
     stored_lock_time = test_db.get_locked_until("prashant")
     assert stored_lock_time == lock_time
 
 
 def test_reset_login_attempts(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     test_db.update_failed_attempts("prashant", 3)
-    test_db.lock_user(
-        "prashant",
-        "2099-01-01T00:00:00",
-    )
+    test_db.lock_user("prashant", "2099-01-01T00:00:00")
     test_db.reset_login_attempts("prashant")
     attempts = test_db.get_failed_attempts("prashant")
     locked_until = test_db.get_locked_until("prashant")
@@ -231,21 +178,13 @@ def test_reset_login_attempts(test_db):
 
 
 def test_get_user_password_hash(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "hashed_password_123",
-    )
+    test_db.create_user("1234567", "prashant", "hashed_password_123")
     stored_hash = test_db.get_user_password_hash("prashant")
     assert stored_hash == "hashed_password_123"
 
 
 def test_user_exists_true(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     assert test_db.user_exists("prashant") is True
 
 
@@ -270,49 +209,28 @@ def test_get_locked_until_unknown_user(test_db):
 
 def test_authenticate_user_success(test_db):
     hashed_password = hash_password("password123")
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        hashed_password,
-    )
-    success, message = test_db.authenticate_user(
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", hashed_password)
+    success, message = test_db.authenticate_user("prashant", "password123")
     assert success
     assert message == "Login Successful"
 
 
 def test_authenticate_user_unknown_user(test_db):
-    success, message = test_db.authenticate_user(
-        "ghost",
-        "password123",
-    )
+    success, message = test_db.authenticate_user("ghost", "password123")
     assert not success
     assert message == "Invalid Username or Password"
 
 
 def test_authenticate_user_wrong_password(test_db):
     hashed_password = hash_password("password123")
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        hashed_password,
-    )
-    success, message = test_db.authenticate_user(
-        "prashant",
-        "wrongpassword",
-    )
+    test_db.create_user("1234567", "prashant", hashed_password)
+    success, message = test_db.authenticate_user("prashant", "wrongpassword")
     assert not success
     assert message == "Invalid Username or Password"
 
 
 def test_account_number_exists_true(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     assert test_db.account_number_exists("1234567")
 
 
@@ -321,10 +239,6 @@ def test_account_number_exists_false(test_db):
 
 
 def test_get_account_number(test_db):
-    test_db.create_user(
-        "1234567",
-        "prashant",
-        "password123",
-    )
+    test_db.create_user("1234567", "prashant", "password123")
     account_number = test_db.get_account_number("prashant")
     assert account_number == "1234567"

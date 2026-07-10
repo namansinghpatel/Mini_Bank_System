@@ -121,6 +121,7 @@ class DepositPage(QWidget):
         )
         layout.addStretch()
         self.setLayout(layout)
+
     # ----------------------------------
     # Called from Welcome Page
     # ----------------------------------
@@ -129,29 +130,20 @@ class DepositPage(QWidget):
         self.account_number = account_number
         self.account_label.setText(f"🏦 Account Number : {account_number}")
         self.amount.clear()
+
     # ----------------------------------
     # Deposit Button
     # ----------------------------------
 
     def deposit_clicked(self):
         amount = self.amount.text()
-        success, message = deposit_money(
-            self.account_number,
-            amount,
-        )
+        success, message = deposit_money(self.account_number, amount)
         if success:
-            QMessageBox.information(
-                self,
-                "Success",
-                message,
-            )
+            QMessageBox.information(self, "Success", message)
             self.amount.clear()
         else:
-            QMessageBox.warning(
-                self,
-                "Deposit Failed",
-                message,
-            )
+            QMessageBox.warning(self, "Deposit Failed", message)
+
     # ----------------------------------
     # Back Button
     # ----------------------------------

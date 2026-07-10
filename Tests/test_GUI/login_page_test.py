@@ -43,16 +43,9 @@ def test_login_success(
     page.username.setText("prashant")
     page.password.setText("password123")
     page.login_clicked()
-    mock_information.assert_called_once_with(
-        page,
-        "Success",
-        "Login Successful",
-    )
+    mock_information.assert_called_once_with(page, "Success", "Login Successful")
     mock_stack.widget.assert_called_once_with(2)
-    mock_stack.widget(2).set_user_details.assert_called_once_with(
-        "prashant",
-        "1234567",
-    )
+    mock_stack.widget(2).set_user_details.assert_called_once_with("prashant", "1234567")
     mock_stack.setCurrentIndex.assert_called_once_with(2)
 
 
@@ -74,9 +67,7 @@ def test_login_failure(
     page.password.setText("wrongpassword")
     page.login_clicked()
     mock_warning.assert_called_once_with(
-        page,
-        "Login Failed",
-        "Invalid Username or Password",
+        page, "Login Failed", "Invalid Username or Password"
     )
     mock_stack.setCurrentIndex.assert_not_called()
 
