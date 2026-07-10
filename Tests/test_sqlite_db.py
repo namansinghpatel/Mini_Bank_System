@@ -242,3 +242,41 @@ def test_get_account_number(test_db):
     test_db.create_user("1234567", "prashant", "password123")
     account_number = test_db.get_account_number("prashant")
     assert account_number == "1234567"
+# =========================================================
+# BALANCE TESTS
+# ==========================================================
+
+
+def test_get_balance(test_db):
+    test_db.create_user("1234567", "prashant", "password123")
+    balance = test_db.get_balance("1234567")
+    assert balance == 0.0
+
+
+def test_get_balance_unknown_account(test_db):
+    balance = test_db.get_balance("9999999")
+    assert balance is None
+# ==========================================================
+# DEPOSIT TESTS
+# ==========================================================
+
+
+def test_deposit_money(test_db):
+    test_db.create_user("1234567", "prashant", "password123")
+    success = test_db.deposit_money("1234567", 500)
+    balance = test_db.get_balance("1234567")
+    assert success
+    assert balance == 500.0
+
+
+def test_deposit_money_multiple_times(test_db):
+    test_db.create_user("1234567", "prashant", "password123")
+    test_db.deposit_money("1234567", 500)
+    test_db.deposit_money("1234567", 300)
+    balance = test_db.get_balance("1234567")
+    assert balance == 800.0
+
+
+def test_deposit_unknown_account(test_db):
+    success = test_db.deposit_money("9999999", 500)
+    assert not success
