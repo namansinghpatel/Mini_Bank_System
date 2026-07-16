@@ -67,6 +67,7 @@ class WelcomePage(QWidget):
         # Withdraw Button
         # ======================================================
         self.withdraw_btn = QPushButton("💸 Withdraw")
+        self.withdraw_btn.clicked.connect(self.withdraw_clicked)
         # ======================================================
         # Transfer Button
         # ======================================================
@@ -146,3 +147,8 @@ class WelcomePage(QWidget):
         deposit_page = self.stack.widget(4)
         deposit_page.set_account(self.account_number)
         self.stack.setCurrentIndex(4)
+
+    def withdraw_clicked(self):
+        withdraw_page = self.stack.widget(5)
+        withdraw_page.set_account(self.account_number)
+        self.stack.setCurrentIndex(5)
