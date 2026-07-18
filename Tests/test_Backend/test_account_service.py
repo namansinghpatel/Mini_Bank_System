@@ -1,4 +1,4 @@
-from Backend.account_service import generate_account_number
+from Backend.account_service import generate_account_number, withdraw_money
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
 
@@ -108,3 +108,67 @@ def test_deposit_money_account_not_found(mock_db):
     assert not success
     assert message == "Account not found."
     mock_db.deposit_money.assert_called_once_with("9999999", 500.0)
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_money_success(mock_db):
+    mock_db.get_balance.return_value = 1000
+    mock_db.withdraw_money.return_value = True
+    success, message = withdraw_money("1234567", "300")
+    assert success is True
+    assert message == "₹300.00 withdrawn successfully."
+    mock_db.withdraw_money.assert_called_once_with("1234567", 300.0)
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_invalid_amount(mock_db):
+    success, message = withdraw_money("1234567", "abc")
+    assert success is False
+    assert message == "Please enter a valid amount."
+    mock_db.get_balance.assert_not_called()
+    mock_db.withdraw_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_negative_amount(mock_db):
+    success, message = withdraw_money("1234567", "-500")
+    assert success is False
+    assert message == "Amount must be greater than zero."
+    mock_db.get_balance.assert_not_called()
+    mock_db.withdraw_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_zero_amount(mock_db):
+    success, message = withdraw_money("1234567", "0")
+    assert success is False
+    assert message == "Amount must be greater than zero."
+    mock_db.get_balance.assert_not_called()
+    mock_db.withdraw_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_account_not_found(mock_db):
+    mock_db.get_balance.return_value = None
+    success, message = withdraw_money("1234567", "500")
+    assert success is False
+    assert message == "Account not found."
+    mock_db.withdraw_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_insufficient_balance(mock_db):
+    mock_db.get_balance.return_value = 400
+    success, message = withdraw_money("1234567", "500")
+    assert success is False
+    assert message == "Insufficient balance."
+    mock_db.withdraw_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_withdraw_database_failure(mock_db):
+    mock_db.get_balance.return_value = 1000
+    mock_db.withdraw_money.return_value = False
+    success, message = withdraw_money("1234567", "200")
+    assert success is False
+    assert message == "Withdrawal failed."

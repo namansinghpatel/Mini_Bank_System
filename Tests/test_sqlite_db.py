@@ -242,6 +242,8 @@ def test_get_account_number(test_db):
     test_db.create_user("1234567", "prashant", "password123")
     account_number = test_db.get_account_number("prashant")
     assert account_number == "1234567"
+
+
 # =========================================================
 # BALANCE TESTS
 # ==========================================================
@@ -256,6 +258,8 @@ def test_get_balance(test_db):
 def test_get_balance_unknown_account(test_db):
     balance = test_db.get_balance("9999999")
     assert balance is None
+
+
 # ==========================================================
 # DEPOSIT TESTS
 # ==========================================================
@@ -280,3 +284,38 @@ def test_deposit_money_multiple_times(test_db):
 def test_deposit_unknown_account(test_db):
     success = test_db.deposit_money("9999999", 500)
     assert not success
+
+
+def test_withdraw_money_success(test_db):
+    account_number = "1234567"
+    test_db.create_user(account_number, "john", "hashed_password")
+    test_db.deposit_money(account_number, 1000)
+    success = test_db.withdraw_money(account_number, 300)
+    assert success is True
+    balance = test_db.get_balance(account_number)
+    assert balance == 700
+
+
+def test_withdraw_money_multiple_times(test_db):
+    account_number = "1234567"
+    test_db.create_user(account_number, "john", "hashed_password")
+    test_db.deposit_money(account_number, 1000)
+    test_db.withdraw_money(account_number, 100)
+    test_db.withdraw_money(account_number, 200)
+    test_db.withdraw_money(account_number, 300)
+    balance = test_db.get_balance(account_number)
+    assert balance == 400
+
+
+def test_withdraw_money_invalid_account(test_db):
+    success = test_db.withdraw_money("9999999", 100)
+    assert success is False
+
+
+def test_get_balance_after_withdraw(test_db):
+    account_number = "1234567"
+    test_db.create_user(account_number, "john", "hashed_password")
+    test_db.deposit_money(account_number, 1500)
+    test_db.withdraw_money(account_number, 500)
+    balance = test_db.get_balance(account_number)
+    assert balance == 1000
