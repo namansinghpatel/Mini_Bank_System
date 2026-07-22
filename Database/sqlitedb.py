@@ -200,5 +200,34 @@ class SQLiteDB:
         self.conn.commit()
         return self.cursor.rowcount > 0
 
+    def transfer_money(self ,sender_account, receiver_account, amount):
+        try:
+            self.cursor.execute("BEGIN")
+            self.cursor.execute(
+               """
+                UPDATE users
+                SET balance = balance - ?
+                WHERE account_number = ?
+                """
+                (amount, sender_account ))
+            
+            if self.cursor.rowcount == 0:
+                raise Exception("Sender account not found.")
+            self.cursor.execute(
+                """
+                UPDATE users
+                SET balance = balance + ?
+                WHERE account_number = ?
+                """
+                (amount, receiver_account),)
+
+            if self.cursor.rowcount == 0:
+                raise Exception("Receiver account not found.")
+            self.conn.commit()
+            return True
+
+        except Exception:
+            self.conn.rollback()
+            return False
 
 sqlitedb = SQLiteDB()

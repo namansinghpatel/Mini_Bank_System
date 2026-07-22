@@ -37,9 +37,7 @@ def deposit_money(account_number, amount):
 
 
 def withdraw_money(account_number, amount):
-    # ---------------------------------
-    # Validate Amount
-    # ---------------------------------
+
     try:
         amount = float(amount)
     except ValueError:
@@ -64,3 +62,27 @@ def withdraw_money(account_number, amount):
     if not success:
         return (False, "Withdrawal failed.")
     return (True, f"₹{amount:.2f} withdrawn successfully.")
+
+
+def transfer_money(sender_account, receiver_account, amount):
+    sender_balance = sqlitedb.get_balance(sender_account)
+    receiver_balance = sqlitedb.get_balance(receiver_account)
+    try:
+        amount = float(amount)
+    except ValueError:
+        return False, "Please enter a valid amount."
+    if amount <= 0:
+        return False, "Amount must be greater than zero."
+    if sender_balance is None:
+        return False, "Sender account not found."
+    if receiver_balance is None:
+        return False, "Receiver account not found."
+    if sender_account == receiver_account:
+        return False, "Cannot transfer to the same account."
+    if amount > sender_balance:
+        return False, "Insufficient balance."
+    
+    success = sqlitedb.transfer_money(sender_account, receiver_account, amount)
+    if success:
+        return (True, f"₹{amount:.2f} transferred successfully.")
+    return False, "Transfer failed."

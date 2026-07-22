@@ -72,6 +72,7 @@ class WelcomePage(QWidget):
         # Transfer Button
         # ======================================================
         self.transfer_btn = QPushButton("🔄 Transfer")
+        self.transfer_btn.clicked.connect(self.transfer_clicked)
         # ======================================================
         # Button Styling
         # ======================================================
@@ -152,3 +153,8 @@ class WelcomePage(QWidget):
         withdraw_page = self.stack.widget(5)
         withdraw_page.set_account(self.account_number)
         self.stack.setCurrentIndex(5)
+
+    def transfer_clicked(self):
+        transfer_page = self.stack.widget(6)
+        transfer_page.set_account(self.account_number)
+        self.stack.setCurrentIndex(6)
