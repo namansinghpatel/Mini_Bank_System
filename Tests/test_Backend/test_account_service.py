@@ -1,4 +1,8 @@
-from Backend.account_service import generate_account_number, withdraw_money
+from Backend.account_service import (
+    generate_account_number,
+    transfer_money,
+    withdraw_money,
+)
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
 
@@ -172,3 +176,93 @@ def test_withdraw_database_failure(mock_db):
     success, message = withdraw_money("1234567", "200")
     assert success is False
     assert message == "Withdrawal failed."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_success(mock_db):
+    mock_db.get_balance.side_effect = [1000, 500]
+    mock_db.transfer_money.return_value = True
+    success, message = transfer_money("1001", "1002", "300")
+    assert success is True
+    assert message == "₹300.00 transferred successfully."
+    assert mock_db.get_balance.call_count == 2
+    mock_db.transfer_money.assert_called_once_with("1001", "1002", 300.0)
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_invalid_amount(mock_db):
+    success, message = transfer_money("1001", "1002", "abc")
+    assert success is False
+    assert message == "Please enter a valid amount."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_empty_amount(mock_db):
+    success, message = transfer_money("1001", "1002", "")
+    assert success is False
+    assert message == "Please enter a valid amount."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_zero_amount(mock_db):
+    success, message = transfer_money("1001", "1002", "0")
+    assert success is False
+    assert message == "Amount must be greater than zero."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_negative_amount(mock_db):
+    success, message = transfer_money("1001", "1002", "-500")
+    assert success is False
+    assert message == "Amount must be greater than zero."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_sender_not_found(mock_db):
+    mock_db.get_balance.return_value = None
+    success, message = transfer_money("9999", "1002", "300")
+    assert success is False
+    assert message == "Sender account not found."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_receiver_not_found(mock_db):
+    mock_db.get_balance.side_effect = [1000, None]
+    success, message = transfer_money("1001", "9999", "300")
+    assert success is False
+    assert message == "Receiver account not found."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_same_account(mock_db):
+    mock_db.get_balance.side_effect = [1000, 1000]
+    success, message = transfer_money("1001", "1001", "300")
+    assert success is False
+    assert message == "Cannot transfer to the same account."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_insufficient_balance(mock_db):
+    mock_db.get_balance.side_effect = [200, 500]
+
+    success, message = transfer_money("1001", "1002", "300")
+    assert success is False
+    assert message == "Insufficient balance."
+    mock_db.transfer_money.assert_not_called()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_transfer_money_database_failure(mock_db):
+    mock_db.get_balance.side_effect = [1000, 500]
+    mock_db.transfer_money.return_value = False
+    success, message = transfer_money("1001", "1002", "300")
+    assert success is False
+    assert message == "Transfer failed."
+    mock_db.transfer_money.assert_called_once_with("1001", "1002", 300.0)

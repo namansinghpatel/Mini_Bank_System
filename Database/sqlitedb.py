@@ -202,13 +202,13 @@ class SQLiteDB:
 
     def transfer_money(self ,sender_account, receiver_account, amount):
         try:
-            self.cursor.execute("BEGIN")
+            self.conn.execute("BEGIN")
             self.cursor.execute(
                """
                 UPDATE users
                 SET balance = balance - ?
                 WHERE account_number = ?
-                """
+                """,
                 (amount, sender_account ))
             
             if self.cursor.rowcount == 0:
@@ -218,7 +218,7 @@ class SQLiteDB:
                 UPDATE users
                 SET balance = balance + ?
                 WHERE account_number = ?
-                """
+                """,
                 (amount, receiver_account),)
 
             if self.cursor.rowcount == 0:
@@ -229,5 +229,5 @@ class SQLiteDB:
         except Exception:
             self.conn.rollback()
             return False
-
+        
 sqlitedb = SQLiteDB()

@@ -319,3 +319,48 @@ def test_get_balance_after_withdraw(test_db):
     test_db.withdraw_money(account_number, 500)
     balance = test_db.get_balance(account_number)
     assert balance == 1000
+
+
+def test_transfer_money_success(test_db):
+    test_db.create_user("1001", "john", "password123")
+    test_db.create_user("1002", "alice", "password123")
+    test_db.deposit_money("1001", 1000)
+    test_db.deposit_money("1002", 500)
+    success = test_db.transfer_money("1001", "1002", 300)
+    sender_balance = test_db.get_balance("1001")
+    receiver_balance = test_db.get_balance("1002")
+    assert success
+    assert sender_balance == 700
+    assert receiver_balance == 800
+
+
+def test_transfer_money_sender_not_found(test_db):
+    test_db.create_user("1002", "alice", "password123")
+    test_db.deposit_money("1002", 500)
+    success = test_db.transfer_money("9999", "1002", 300)
+    receiver_balance = test_db.get_balance("1002")
+    assert success is False
+    assert receiver_balance == 500
+
+
+def test_transfer_money_receiver_not_found(test_db):
+    test_db.create_user("1001", "john", "password123")
+    test_db.deposit_money("1001", 1000)
+    success = test_db.transfer_money("1001", "9999", 300)
+    sender_balance = test_db.get_balance("1001")
+    assert success is False
+    assert sender_balance == 1000
+
+
+def test_transfer_money_multiple_times(test_db):
+    test_db.create_user("1001", "john", "password123")
+    test_db.create_user("1002", "alice", "password123")
+    test_db.deposit_money("1001", 1000)
+    test_db.deposit_money("1002", 500)
+    test_db.transfer_money("1001", "1002", 100)
+    test_db.transfer_money("1001", "1002", 200)
+    test_db.transfer_money("1001", "1002", 300)
+    sender = test_db.get_balance("1001")
+    receiver = test_db.get_balance("1002")
+    assert sender == 400
+    assert receiver == 1100
