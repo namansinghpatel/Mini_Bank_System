@@ -10,6 +10,7 @@ from GUI.balance_page import BalancePage
 from GUI.deposit_page import DepositPage
 from GUI.withdraw_page import WithdrawPage
 from GUI.transfer_page import TransferPage
+from GUI.history_page import HistoryPage
 app = QApplication(sys.argv)
 stack = QStackedWidget()
 # --------------------------------
@@ -22,6 +23,7 @@ balance_page = BalancePage(stack)
 deposit_page = DepositPage(stack)
 withdraw_page = WithdrawPage(stack)
 transfer_page = TransferPage(stack)
+history_page = HistoryPage(stack)
 # --------------------------------
 # Add Pages To Stack
 # -------------------------------
@@ -32,6 +34,7 @@ stack.addWidget(balance_page)
 stack.addWidget(deposit_page)
 stack.addWidget(withdraw_page)
 stack.addWidget(transfer_page)
+stack.addWidget(history_page)
 # --------------------------------
 # Window Settings
 # --------------------------------

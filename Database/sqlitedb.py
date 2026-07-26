@@ -1,5 +1,6 @@
 import sqlite3
 from Backend.security import verify_password
+from datetime import datetime
 
 
 class SQLiteDB:
@@ -11,18 +12,22 @@ class SQLiteDB:
 
     def create_tables(self):
 
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users
-            (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS users
+               (id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_number TEXT UNIQUE NOT NULL,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 balance REAL DEFAULT 0.0,
                 failed_attempts INTEGER DEFAULT 0,
-                locked_until TEXT
-            )
-        """)
+                locked_until TEXT)""")
+
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS transactions
+               (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_number TEXT NOT NULL,
+                transaction_type TEXT NOT NULL,
+                amount REAL NOT NULL,
+                balance_after REAL NOT NULL,
+                transaction_time TEXT NOT NULL)""")
         self.conn.commit()
 
     def user_exists(self, username):
@@ -185,8 +190,12 @@ class SQLiteDB:
             """,
             (amount, account_number),
         )
-        self.conn.commit()
-        return self.cursor.rowcount > 0
+        if self.cursor.rowcount > 0:
+            balance = self.get_balance(account_number)
+            self.add_transaction(account_number, "Deposit", amount, balance)
+            return True
+            self.conn.commit()
+        return False
 
     def withdraw_money(self, account_number, amount):
         self.cursor.execute(
@@ -197,20 +206,24 @@ class SQLiteDB:
             """,
             (amount, account_number),
         )
-        self.conn.commit()
-        return self.cursor.rowcount > 0
+        if self.cursor.rowcount > 0:
+            balance = self.get_balance(account_number)
+            self.add_transaction(account_number, "Withdraw", amount, balance)
+            return True
+            self.conn.commit()
+        return False
 
-    def transfer_money(self ,sender_account, receiver_account, amount):
+    def transfer_money(self, sender_account, receiver_account, amount):
         try:
             self.conn.execute("BEGIN")
             self.cursor.execute(
-               """
+                """
                 UPDATE users
                 SET balance = balance - ?
                 WHERE account_number = ?
                 """,
-                (amount, sender_account ))
-            
+                (amount, sender_account),)
+
             if self.cursor.rowcount == 0:
                 raise Exception("Sender account not found.")
             self.cursor.execute(
@@ -220,14 +233,49 @@ class SQLiteDB:
                 WHERE account_number = ?
                 """,
                 (amount, receiver_account),)
-
             if self.cursor.rowcount == 0:
                 raise Exception("Receiver account not found.")
+            # Get updated balances
+            sender_balance = self.get_balance(sender_account)
+            receiver_balance = self.get_balance(receiver_account)
+            # Record sender history
+            self.add_transaction(sender_account, "Transfer Out", amount, sender_balance)
+            # Record receiver history
+            self.add_transaction(receiver_account, "Transfer In", amount, receiver_balance)
             self.conn.commit()
             return True
-
         except Exception:
             self.conn.rollback()
             return False
+
+    def add_transaction(self, account_number, transaction_type, amount, balance_after):
+        transaction_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.cursor.execute(
+            """
+            INSERT INTO transactions
+               (account_number,
+                transaction_type,
+                amount,
+                balance_after,
+                transaction_time)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (account_number, transaction_type, amount, balance_after, transaction_time))
+
+    def get_transactions(self, account_number):
+        self.cursor.execute(
+            """
+            SELECT
+                transaction_type,
+                amount,
+                balance_after,
+                transaction_time
+            FROM transactions
+            WHERE account_number = ?
+            ORDER BY id DESC
+            """,
+            (account_number,),)
+        return self.cursor.fetchall()
+
         
 sqlitedb = SQLiteDB()

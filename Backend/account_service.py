@@ -86,3 +86,7 @@ def transfer_money(sender_account, receiver_account, amount):
     if success:
         return (True, f"₹{amount:.2f} transferred successfully.")
     return False, "Transfer failed."
+
+def get_transaction_history(account_number):
+    transactions = sqlitedb.get_transactions(account_number)
+    return True, transactions

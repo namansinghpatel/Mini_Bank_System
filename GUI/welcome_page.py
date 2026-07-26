@@ -74,6 +74,11 @@ class WelcomePage(QWidget):
         self.transfer_btn = QPushButton("🔄 Transfer")
         self.transfer_btn.clicked.connect(self.transfer_clicked)
         # ======================================================
+        # Transaction History
+        # ======================================================
+        self.history_button = QPushButton("Transaction History")
+        self.history_button.clicked.connect(self.show_transaction_history)
+        # ======================================================
         # Button Styling
         # ======================================================
         buttons = [
@@ -81,6 +86,7 @@ class WelcomePage(QWidget):
             self.deposit_btn,
             self.withdraw_btn,
             self.transfer_btn,
+            self.history_button
         ]
         for button in buttons:
             button.setMinimumSize(
@@ -106,6 +112,7 @@ class WelcomePage(QWidget):
         grid.addWidget(self.deposit_btn, 0, 1)
         grid.addWidget(self.withdraw_btn, 1, 0)
         grid.addWidget(self.transfer_btn, 1, 1)
+        grid.addWidget(self.history_button, 0, 2)
         grid.setHorizontalSpacing(25)
         grid.setVerticalSpacing(25)
         # ======================================================
@@ -158,3 +165,8 @@ class WelcomePage(QWidget):
         transfer_page = self.stack.widget(6)
         transfer_page.set_account(self.account_number)
         self.stack.setCurrentIndex(6)
+
+    def show_transaction_history(self):
+        history_page = self.stack.widget(7)
+        history_page.load_history(self.account_number)
+        self.stack.setCurrentIndex(7)
