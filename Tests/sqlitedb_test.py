@@ -364,3 +364,14 @@ def test_transfer_money_multiple_times(test_db):
     receiver = test_db.get_balance("1002")
     assert sender == 400
     assert receiver == 1100
+
+
+def test_reset_login_attempts(test_db):
+    test_db.create_user("1234567", "prashant", "password123")
+    test_db.update_failed_attempts("prashant", 3)
+    test_db.lock_user("prashant", "2099-01-01T00:00:00")
+    test_db.reset_login_attempts("prashant")
+    attempts = test_db.get_failed_attempts("prashant")
+    locked_until = test_db.get_locked_until("prashant")
+    assert attempts == 0
+    assert locked_until is None

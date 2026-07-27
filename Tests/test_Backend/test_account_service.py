@@ -2,7 +2,7 @@ from Backend.account_service import (
     generate_account_number,
     transfer_money,
     withdraw_money,
-)
+    get_transaction_history)
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
 
@@ -266,3 +266,49 @@ def test_transfer_money_database_failure(mock_db):
     assert success is False
     assert message == "Transfer failed."
     mock_db.transfer_money.assert_called_once_with("1001", "1002", 300.0)
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_get_transaction_history_success(mock_db):
+    mock_db.get_transactions.return_value = [("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")]
+    success, history = get_transaction_history("1001")
+    assert success is True
+    assert len(history) == 1
+    mock_db.get_transactions.assert_called_once_with("1001")
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_get_transaction_history_empty(mock_db):
+    mock_db.get_transactions.return_value = []
+    success, history = get_transaction_history("1001")
+    assert success is True
+    assert history == []
+    mock_db.get_transactions.assert_called_once_with("1001")
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_get_transaction_history_multiple_records(mock_db):
+    mock_db.get_transactions.return_value = [
+        ("Withdraw", 200.0, 800.0, "2026-07-27 10:10:00"),
+        ("Deposit", 500.0, 1000.0, "2026-07-27 09:30:00"),
+    ]
+    success, history = get_transaction_history("1001")
+    assert success is True
+    assert len(history) == 2
+    assert history[0][0] == "Withdraw"
+    assert history[1][0] == "Deposit"
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_get_transaction_history_transaction_fields(mock_db):
+    mock_db.get_transactions.return_value = [("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")]
+    success, history = get_transaction_history("1001")
+    assert success is True
+    assert len(history[0]) == 4
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_get_transaction_history_database_called(mock_db):
+    mock_db.get_transactions.return_value = []
+    get_transaction_history("1001")
+    mock_db.get_transactions.assert_called_once_with("1001")
