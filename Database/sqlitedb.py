@@ -193,8 +193,8 @@ class SQLiteDB:
         if self.cursor.rowcount > 0:
             balance = self.get_balance(account_number)
             self.add_transaction(account_number, "Deposit", amount, balance)
-            return True
             self.conn.commit()
+            return True
         return False
 
     def withdraw_money(self, account_number, amount):
@@ -209,8 +209,8 @@ class SQLiteDB:
         if self.cursor.rowcount > 0:
             balance = self.get_balance(account_number)
             self.add_transaction(account_number, "Withdraw", amount, balance)
-            return True
             self.conn.commit()
+            return True
         return False
 
     def transfer_money(self, sender_account, receiver_account, amount):
@@ -277,5 +277,41 @@ class SQLiteDB:
             (account_number,),)
         return self.cursor.fetchall()
 
-        
+    def delete_account(self, account_number):
+        try:
+            self.conn.execute("BEGIN")
+            self.cursor.execute(
+                """
+                DELETE FROM transactions
+                WHERE account_number = ?
+                """,
+                (account_number,),)
+            self.cursor.execute(
+                """
+                DELETE FROM users
+                WHERE account_number = ?
+                """,
+                (account_number,),)
+            if self.cursor.rowcount == 0:
+                self.conn.rollback()
+                return False
+            self.conn.commit()
+            return True
+        except Exception:
+            self.conn.rollback()
+            return False
+
+    def get_user_password_hash_by_account(self, account_number):
+        self.cursor.execute(
+            """
+            SELECT password
+            FROM users
+            WHERE account_number = ?
+            """,
+            (account_number,),)
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]
+        return None
+
 sqlitedb = SQLiteDB()

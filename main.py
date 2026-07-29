@@ -11,6 +11,7 @@ from GUI.deposit_page import DepositPage
 from GUI.withdraw_page import WithdrawPage
 from GUI.transfer_page import TransferPage
 from GUI.history_page import HistoryPage
+from GUI.delete_account_page import DeleteAccountPage
 app = QApplication(sys.argv)
 stack = QStackedWidget()
 # --------------------------------
@@ -24,6 +25,7 @@ deposit_page = DepositPage(stack)
 withdraw_page = WithdrawPage(stack)
 transfer_page = TransferPage(stack)
 history_page = HistoryPage(stack)
+delete_account_page = DeleteAccountPage(stack)
 # --------------------------------
 # Add Pages To Stack
 # -------------------------------
@@ -35,6 +37,7 @@ stack.addWidget(deposit_page)
 stack.addWidget(withdraw_page)
 stack.addWidget(transfer_page)
 stack.addWidget(history_page)
+stack.addWidget(delete_account_page)
 # --------------------------------
 # Window Settings
 # --------------------------------

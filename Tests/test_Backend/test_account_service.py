@@ -1,10 +1,10 @@
 from Backend.account_service import (
     generate_account_number,
     transfer_money,
-    withdraw_money,
-    get_transaction_history)
+    withdraw_money,)
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
+from Backend.account_service import get_transaction_history
 
 
 @patch("Backend.account_service.sqlitedb")

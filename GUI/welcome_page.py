@@ -79,14 +79,20 @@ class WelcomePage(QWidget):
         self.history_button = QPushButton("Transaction History")
         self.history_button.clicked.connect(self.show_transaction_history)
         # ======================================================
-        # Button Styling
+        # Delete Account
+        # ======================================================
+        self.delete_account_btn = QPushButton("Delete Account")
+        self.delete_account_btn.clicked.connect(self.show_delete_account_page)
+        # ======================================================
+        # Button
         # ======================================================
         buttons = [
             self.check_balance_btn,
             self.deposit_btn,
             self.withdraw_btn,
             self.transfer_btn,
-            self.history_button
+            self.history_button,
+            self.delete_account_btn
         ]
         for button in buttons:
             button.setMinimumSize(
@@ -113,6 +119,7 @@ class WelcomePage(QWidget):
         grid.addWidget(self.withdraw_btn, 1, 0)
         grid.addWidget(self.transfer_btn, 1, 1)
         grid.addWidget(self.history_button, 0, 2)
+        grid.addWidget(self.delete_account_btn, 1, 2)
         grid.setHorizontalSpacing(25)
         grid.setVerticalSpacing(25)
         # ======================================================
@@ -170,3 +177,9 @@ class WelcomePage(QWidget):
         history_page = self.stack.widget(7)
         history_page.load_history(self.account_number)
         self.stack.setCurrentIndex(7)
+
+    def show_delete_account_page(self):
+        delete_account_page = self.stack.widget(8)
+        delete_account_page.set_account_number(self.account_number)
+        self.stack.setCurrentIndex(8)
+

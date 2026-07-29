@@ -1,5 +1,6 @@
 import random
 from Database.sqlitedb import sqlitedb
+from Backend.security import verify_password
 
 
 def generate_account_number():
@@ -90,3 +91,16 @@ def transfer_money(sender_account, receiver_account, amount):
 def get_transaction_history(account_number):
     transactions = sqlitedb.get_transactions(account_number)
     return True, transactions
+
+def delete_account(account_number, password):
+    stored_hash = sqlitedb.get_user_password_hash_by_account(account_number)
+    if password == "":
+        return False, "Password cannot be empty."
+    if stored_hash is None:
+        return False, "Account not found."
+    if not verify_password(password, stored_hash):
+        return False, "Invalid password."
+    success = sqlitedb.delete_account(account_number)
+    if not success:
+        return False, "Account deletion failed."
+    return True, "Account deleted successfully."

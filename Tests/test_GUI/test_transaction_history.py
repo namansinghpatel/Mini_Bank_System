@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from GUI.history_page import HistoryPage
 from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QStackedWidget
 
 
 @patch("GUI.history_page.get_transaction_history")
@@ -52,8 +53,9 @@ def test_table_headers(mock_history, qtbot):
     assert page.table.horizontalHeaderItem(3).text() == "Time"
 
 
-@patch("GUI.history_page.get_transaction_history")
-def test_back_button(qtbot, mock_history):
-    page = HistoryPage(None)
+def test_back_button(qtbot):
+    stack = QStackedWidget()
+    page = HistoryPage(stack)
+    qtbot.addWidget(stack)
     qtbot.addWidget(page)
-    page.back_button.click()
+    page.back_btn.click()

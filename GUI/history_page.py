@@ -1,6 +1,6 @@
 from Backend.account_service import get_transaction_history
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QWidget, QLabel, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem)
+from PyQt6.QtWidgets import (QWidget, QLabel, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem,QMessageBox)
 
 class HistoryPage(QWidget):
 
