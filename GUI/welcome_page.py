@@ -86,13 +86,16 @@ class WelcomePage(QWidget):
         # ======================================================
         # Button
         # ======================================================
+        self.change_password_btn = QPushButton("🔒 Change Password")
+        self.change_password_btn.clicked.connect(self.change_password_clicked)
         buttons = [
             self.check_balance_btn,
             self.deposit_btn,
             self.withdraw_btn,
             self.transfer_btn,
             self.history_button,
-            self.delete_account_btn
+            self.delete_account_btn,
+            self.change_password_btn
         ]
         for button in buttons:
             button.setMinimumSize(
@@ -120,6 +123,7 @@ class WelcomePage(QWidget):
         grid.addWidget(self.transfer_btn, 1, 1)
         grid.addWidget(self.history_button, 0, 2)
         grid.addWidget(self.delete_account_btn, 1, 2)
+        grid.addWidget(self.change_password_btn, 2, 2)
         grid.setHorizontalSpacing(25)
         grid.setVerticalSpacing(25)
         # ======================================================
@@ -183,3 +187,7 @@ class WelcomePage(QWidget):
         delete_account_page.set_account_number(self.account_number)
         self.stack.setCurrentIndex(8)
 
+    def change_password_clicked(self):
+        change_page = self.stack.widget(9)
+        change_page.set_account(self.account_number)
+        self.stack.setCurrentIndex(9)

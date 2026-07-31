@@ -1,6 +1,6 @@
 import random
 from Database.sqlitedb import sqlitedb
-from Backend.security import verify_password
+from Backend.security import verify_password, hash_password
 
 
 def generate_account_number():
@@ -82,15 +82,17 @@ def transfer_money(sender_account, receiver_account, amount):
         return False, "Cannot transfer to the same account."
     if amount > sender_balance:
         return False, "Insufficient balance."
-    
+
     success = sqlitedb.transfer_money(sender_account, receiver_account, amount)
     if success:
         return (True, f"₹{amount:.2f} transferred successfully.")
     return False, "Transfer failed."
 
+
 def get_transaction_history(account_number):
     transactions = sqlitedb.get_transactions(account_number)
     return True, transactions
+
 
 def delete_account(account_number, password):
     stored_hash = sqlitedb.get_user_password_hash_by_account(account_number)
@@ -104,3 +106,31 @@ def delete_account(account_number, password):
     if not success:
         return False, "Account deletion failed."
     return True, "Account deleted successfully."
+
+
+def change_password(account_number, current_password, new_password, confirm_password):
+    if current_password == "":
+        return False, "Please enter your current password."
+    if new_password == "":
+        return False, "Please enter a new password."
+    if new_password == "":
+        return False, "Please enter a new password."
+    if new_password != confirm_password:
+        return False, "New passwords do not match."
+    if len(new_password) < 8:
+        return False, "Password must be at least 8 characters long."
+
+    stored_hash = sqlitedb.get_user_password_hash_by_account(account_number)
+    if stored_hash is None:
+        return False, "Account not found."
+    if not verify_password(current_password, stored_hash):
+        return False, "Current password is incorrect."
+    if current_password == new_password:
+        return False, "New password must be different from the current password."
+
+    hashed_password = hash_password(new_password)
+    success = sqlitedb.update_password(account_number, hashed_password)
+    if success:
+        return True, "Password changed successfully."
+
+    return False, "Password update failed."

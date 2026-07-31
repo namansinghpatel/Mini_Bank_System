@@ -314,4 +314,15 @@ class SQLiteDB:
             return result[0]
         return None
 
+    def update_password(self, account_number, hashed_password):
+        self.cursor.execute(
+            """
+            UPDATE users
+            SET password = ?
+            WHERE account_number = ?
+            """,
+            (hashed_password, account_number),)
+        self.conn.commit()
+        return self.cursor.rowcount > 0
+
 sqlitedb = SQLiteDB()

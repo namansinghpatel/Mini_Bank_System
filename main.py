@@ -12,6 +12,7 @@ from GUI.withdraw_page import WithdrawPage
 from GUI.transfer_page import TransferPage
 from GUI.history_page import HistoryPage
 from GUI.delete_account_page import DeleteAccountPage
+from GUI.change_password_page import ChangePasswordPage
 app = QApplication(sys.argv)
 stack = QStackedWidget()
 # --------------------------------
@@ -26,6 +27,7 @@ withdraw_page = WithdrawPage(stack)
 transfer_page = TransferPage(stack)
 history_page = HistoryPage(stack)
 delete_account_page = DeleteAccountPage(stack)
+change_password_page = ChangePasswordPage(stack)
 # --------------------------------
 # Add Pages To Stack
 # -------------------------------
@@ -38,6 +40,7 @@ stack.addWidget(withdraw_page)
 stack.addWidget(transfer_page)
 stack.addWidget(history_page)
 stack.addWidget(delete_account_page)
+stack.addWidget(change_password_page)
 # --------------------------------
 # Window Settings
 # --------------------------------
