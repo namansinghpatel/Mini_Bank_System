@@ -375,3 +375,40 @@ def test_reset_login_attempts(test_db):
     locked_until = test_db.get_locked_until("prashant")
     assert attempts == 0
     assert locked_until is None
+
+
+def test_update_password_success(test_db):
+    test_db.create_user("1001", "prashant", "OldPassword")
+    new_password = hash_password("NewPassword123")
+    success = test_db.update_password("1001", new_password)
+    stored_hash = test_db.get_user_password_hash_by_account("1001")
+    assert success is True
+    assert stored_hash == new_password
+
+
+def test_update_password_invalid_account(test_db):
+    new_password = hash_password("NewPassword123")
+    success = test_db.update_password("9999", new_password)
+    assert success is False
+
+
+def test_update_password_changes_hash(test_db):
+    test_db.create_user("1001", "prashant", "OldPassword")
+    old_hash = test_db.get_user_password_hash_by_account("1001")
+    new_hash = hash_password("NewPassword123")
+    test_db.update_password("1001", new_hash)
+    updated_hash = test_db.get_user_password_hash_by_account("1001")
+    assert old_hash != updated_hash
+
+
+def test_update_password_multiple_times(test_db):
+    test_db.create_user("1001", "prashant", "OldPassword")
+    hash1 = hash_password("PasswordOne")
+    hash2 = hash_password("PasswordTwo")
+    test_db.update_password("1001", hash1)
+    test_db.update_password("1001", hash2)
+    stored_hash = test_db.get_user_password_hash_by_account("1001")
+    assert stored_hash == hash2
+
+
+

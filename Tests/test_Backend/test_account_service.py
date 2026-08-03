@@ -1,7 +1,9 @@
 from Backend.account_service import (
+    change_password,
     generate_account_number,
     transfer_money,
-    withdraw_money,)
+    withdraw_money,
+    hash_password)
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
 from Backend.account_service import get_transaction_history
@@ -312,3 +314,55 @@ def test_get_transaction_history_database_called(mock_db):
     mock_db.get_transactions.return_value = []
     get_transaction_history("1001")
     mock_db.get_transactions.assert_called_once_with("1001")
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_success(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
+    mock_db.update_password.return_value = True
+    success, message = change_password(
+        "1001",
+        "OldPassword123",
+        "NewPassword123",
+        "NewPassword123")
+    assert success is True
+    assert message == "Password changed successfully."
+    mock_db.update_password.assert_called_once()
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_wrong_current_password(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
+    success, message = change_password(
+        "1001",
+        "WrongPassword",
+        "NewPassword123",
+        "NewPassword123")
+    assert success is False
+    assert message == "Current password is incorrect."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_passwords_not_match(mock_db):
+    success, message = change_password(
+        "1001",
+        "OldPassword123",
+        "NewPassword123",
+        "DifferentPassword")
+    assert success is False
+    assert message == "New passwords do not match."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_database_failure(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
+    mock_db.update_password.return_value = False
+    success, message = change_password(
+        "1001",
+        "OldPassword123",
+        "NewPassword123",
+        "NewPassword123")
+    assert success is False
+    assert message == "Password update failed."
+
+
