@@ -1,9 +1,11 @@
 from Backend.account_service import (
     change_password,
+    delete_account,
     generate_account_number,
     transfer_money,
     withdraw_money,
-    hash_password)
+    hash_password,
+)
 from unittest.mock import patch
 from Backend.account_service import get_account_balance, deposit_money
 from Backend.account_service import get_transaction_history
@@ -272,7 +274,9 @@ def test_transfer_money_database_failure(mock_db):
 
 @patch("Backend.account_service.sqlitedb")
 def test_get_transaction_history_success(mock_db):
-    mock_db.get_transactions.return_value = [("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")]
+    mock_db.get_transactions.return_value = [
+        ("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")
+    ]
     success, history = get_transaction_history("1001")
     assert success is True
     assert len(history) == 1
@@ -303,7 +307,9 @@ def test_get_transaction_history_multiple_records(mock_db):
 
 @patch("Backend.account_service.sqlitedb")
 def test_get_transaction_history_transaction_fields(mock_db):
-    mock_db.get_transactions.return_value = [("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")]
+    mock_db.get_transactions.return_value = [
+        ("Deposit", 500.0, 1500.0, "2026-07-27 10:00:00")
+    ]
     success, history = get_transaction_history("1001")
     assert success is True
     assert len(history[0]) == 4
@@ -320,11 +326,7 @@ def test_get_transaction_history_database_called(mock_db):
 def test_change_password_success(mock_db):
     mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
     mock_db.update_password.return_value = True
-    success, message = change_password(
-        "1001",
-        "OldPassword123",
-        "NewPassword123",
-        "NewPassword123")
+    success, message = change_password("1001", "OldPassword123", "NewPassword123", "NewPassword123")
     assert success is True
     assert message == "Password changed successfully."
     mock_db.update_password.assert_called_once()
@@ -333,22 +335,14 @@ def test_change_password_success(mock_db):
 @patch("Backend.account_service.sqlitedb")
 def test_change_password_wrong_current_password(mock_db):
     mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
-    success, message = change_password(
-        "1001",
-        "WrongPassword",
-        "NewPassword123",
-        "NewPassword123")
+    success, message = change_password("1001", "WrongPassword", "NewPassword123", "NewPassword123")
     assert success is False
     assert message == "Current password is incorrect."
 
 
 @patch("Backend.account_service.sqlitedb")
 def test_change_password_passwords_not_match(mock_db):
-    success, message = change_password(
-        "1001",
-        "OldPassword123",
-        "NewPassword123",
-        "DifferentPassword")
+    success, message = change_password("1001", "OldPassword123", "NewPassword123", "DifferentPassword")
     assert success is False
     assert message == "New passwords do not match."
 
@@ -357,12 +351,97 @@ def test_change_password_passwords_not_match(mock_db):
 def test_change_password_database_failure(mock_db):
     mock_db.get_user_password_hash_by_account.return_value = hash_password("OldPassword123")
     mock_db.update_password.return_value = False
-    success, message = change_password(
-        "1001",
-        "OldPassword123",
-        "NewPassword123",
-        "NewPassword123")
+    success, message = change_password("1001", "OldPassword123", "NewPassword123", "NewPassword123")
     assert success is False
     assert message == "Password update failed."
 
 
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_empty_current_password(mock_db):
+    success, message = change_password("1001", "", "NewPassword123", "NewPassword123")
+    assert success is False
+    assert message == "Please enter your current password."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_empty_new_password(mock_db):
+    success, message = change_password(
+        "1001",
+        "OldPassword123",
+        "",
+        "")
+    assert success is False
+    assert message == "Please enter a new password."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_empty_confirm_password(mock_db):
+    success, message = change_password("1001", "OldPassword123", "NewPassword123", "")
+    assert success is False
+    assert message == "Please confirm your new password."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_short_password(mock_db):
+    success, message = change_password("1001", "OldPassword123", "abc", "abc")
+    assert success is False
+    assert message == "Password must be at least 8 characters long."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_account_not_found(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = None
+    success, message = change_password("1001", "OldPassword123", "NewPassword123", "NewPassword123")
+    assert success is False
+    assert message == "Account not found."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_change_password_same_password(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("Password123")
+    success, message = change_password("1001", "Password123", "Password123", "Password123")
+    assert success is False
+    assert message == "New password must be different from the current password."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_delete_account_empty_password(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("Password123")
+    success, message = delete_account("1001", "")
+    assert success is False
+    assert message == "Password cannot be empty."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_delete_account_account_not_found(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = None
+    success, message = delete_account("1001", "Password123")
+    assert success is False
+    assert message == "Account not found."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_delete_account_invalid_password(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("CorrectPassword")
+    success, message = delete_account("1001", "WrongPassword")
+    assert success is False
+    assert message == "Invalid password."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_delete_account_database_failure(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("Password123")
+    mock_db.delete_account.return_value = False
+    success, message = delete_account("1001", "Password123")
+    assert success is False
+    assert message == "Account deletion failed."
+
+
+@patch("Backend.account_service.sqlitedb")
+def test_delete_account_success(mock_db):
+    mock_db.get_user_password_hash_by_account.return_value = hash_password("Password123")
+    mock_db.delete_account.return_value = True
+    success, message = delete_account("1001", "Password123")
+    assert success is True
+    assert message == "Account deleted successfully."
+    mock_db.delete_account.assert_called_once_with("1001")

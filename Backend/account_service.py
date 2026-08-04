@@ -113,8 +113,8 @@ def change_password(account_number, current_password, new_password, confirm_pass
         return False, "Please enter your current password."
     if new_password == "":
         return False, "Please enter a new password."
-    if new_password == "":
-        return False, "Please enter a new password."
+    if confirm_password == "":
+        return False, "Please confirm your new password."
     if new_password != confirm_password:
         return False, "New passwords do not match."
     if len(new_password) < 8:
