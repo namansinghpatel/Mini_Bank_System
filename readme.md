@@ -2,9 +2,66 @@
 
 A desktop banking application built with **Python, PyQt6, SQLite, bcrypt, and pytest**.
 
-This project was developed as a hands-on learning journey to understand how a real-world application can be structured using **layered architecture**, separation of responsibilities, secure authentication, database transactions, automated testing, mocking, and GUI development.
+This project is a hands-on learning journey focused on understanding how a real-world application can be designed, implemented, tested, debugged, and improved using layered architecture, separation of responsibilities, secure authentication, database transactions, automated testing, mocking, and GUI development.
 
-The project intentionally separates the application into three primary layers:
+> **Project status:** Core banking, authentication, transaction, account-management, GUI, and automated-testing features implemented.
+
+---
+
+# 📌 Table of Contents
+
+- [Project Overview](#-project-overview)
+- [Current Features](#-current-features)
+- [Application Architecture](#-application-architecture)
+- [Project Structure](#-project-structure)
+- [GUI](#️-gui)
+- [Authentication & Security](#-authentication--security)
+- [Banking Operations](#-banking-operations)
+- [Transaction System](#-transaction-system)
+- [Account Management](#-account-management)
+- [Database Design](#️-database-design)
+- [Backend Services](#-backend-services)
+- [Testing Strategy](#-testing-strategy)
+- [Mocking Strategy](#-mocking-strategy)
+- [Test Coverage](#-test-coverage)
+- [Code Implementation Screenshots](#-code-implementation-screenshots)
+- [Installation](#️-installation)
+- [Running the Application](#️-running-the-application)
+- [Running Tests](#-running-tests)
+- [Application Flows](#-application-flows)
+- [Software Engineering Concepts Learned](#-software-engineering-concepts-learned)
+- [Development Workflow](#-development-workflow)
+- [Future Roadmap](#️-future-roadmap)
+- [Disclaimer](#️-disclaimer)
+- [Author](#-author)
+
+---
+
+# 📌 Project Overview
+
+The Mini Bank System is a desktop banking application designed as a practical Python software-engineering project.
+
+The application provides:
+
+- Account creation
+- Secure login
+- Account-number generation
+- Password hashing and verification
+- Failed-login tracking and account locking
+- Balance checking
+- Deposits
+- Withdrawals
+- Money transfers
+- Transaction history
+- Password changes
+- Account deletion
+- Automated Database tests
+- Automated Backend tests
+- Automated GUI tests
+- Mocking and test isolation
+- Coverage analysis
+
+The application follows a simple layered architecture:
 
 ```text
 ┌──────────────────────────────┐
@@ -21,31 +78,11 @@ The project intentionally separates the application into three primary layers:
                ▼
 ┌──────────────────────────────┐
 │       Database Layer         │
-│          SQLite              │
+│           SQLite             │
 └──────────────────────────────┘
 ```
 
-The goal is not to reproduce a production banking platform, but to build a realistic learning project while applying software engineering principles progressively.
-
----
-
-# 📌 Project Overview
-
-The Mini Bank System provides the core functionality expected from a small desktop banking application.
-
-Users can:
-
-* Create a bank account
-* Log in securely
-* Check account balance
-* Deposit money
-* Withdraw money
-* Transfer money
-* View transaction history
-* Change their password
-* Delete their account
-
-The project also includes automated tests for the **Database, Backend, and GUI layers**.
+The GUI is responsible for user interaction, the Backend is responsible for business rules, and the Database layer is responsible for persistent storage.
 
 ---
 
@@ -53,132 +90,158 @@ The project also includes automated tests for the **Database, Backend, and GUI l
 
 ## 🔐 User Authentication
 
-* Create New Account
-* Login with Username & Password
-* Username Validation
-* Password Validation
-* Duplicate Username Detection
-* Secure Password Storage using bcrypt
-* Account Number Generation
-* Failed Login Attempt Tracking
-* Account Locking
-* Login Attempt Reset
-
----
+- Create New Account
+- Login with Username & Password
+- Username validation
+- Password validation
+- Duplicate username detection
+- Secure password storage using bcrypt
+- Automatic account-number generation
+- Failed login-attempt tracking
+- Account locking
+- Login-attempt reset
 
 ## 🛡️ Password Security
 
-Passwords are **never stored as plain text**.
+Passwords are never stored as plain text.
 
-For example, instead of storing:
+Example:
 
 ```text
+Plain password:
 password123
-```
 
-the database stores a bcrypt hash:
-
-```text
+Stored value:
 $2b$12$Pc4Qd5YJ....
 ```
 
-Password verification is performed using bcrypt rather than comparing the plain-text password with the stored hash.
+The application uses bcrypt hashing and password verification.
 
-### Password Features
+### Password functionality
 
-* bcrypt password hashing
-* Password verification
-* Minimum password length validation
-* Change Password functionality
-* Current password verification
-* New password confirmation
+- bcrypt hashing
+- bcrypt verification
+- Minimum password-length validation
+- Current-password verification
+- New-password confirmation
+- Change Password feature
+- Re-authentication after password change
 
----
-
-# 💰 Banking Features
-
-## Account Balance
-
-Users can view their current account balance.
+The current password-strength rule used by the application is intentionally simple:
 
 ```text
-Account
-   │
-   ▼
-Get Balance
-   │
-   ▼
-Display Current Balance
+Minimum 8 characters
 ```
 
 ---
 
-## Deposit Money
+# 💰 Banking Operations
 
-Users can deposit money into their account.
+## 💵 Deposit
 
-The system:
-
-1. Validates the amount.
-2. Checks that the amount is greater than zero.
-3. Updates the account balance.
-4. Records the transaction.
-5. Stores the balance after the transaction.
-
----
-
-## Withdraw Money
-
-Users can withdraw money from their account.
-
-The system:
-
-1. Validates the amount.
-2. Checks that the account exists.
-3. Retrieves the current balance.
-4. Checks sufficient funds.
-5. Updates the balance.
-6. Records the transaction.
-
-Insufficient balance is rejected.
-
----
-
-## Transfer Money
-
-Users can transfer money between accounts.
-
-The system validates:
-
-* Sender account
-* Receiver account
-* Transfer amount
-* Same-account transfers
-* Sufficient balance
-
-A transfer updates both accounts:
+The deposit flow is:
 
 ```text
-Sender
-  │
-  │  - Amount
-  ▼
-Receiver
-  │
-  │  + Amount
-  ▼
-Transaction History
+Deposit Request
+      ↓
+Validate Amount
+      ↓
+Check Amount > 0
+      ↓
+Update Balance
+      ↓
+Get Updated Balance
+      ↓
+Record Transaction
+      ↓
+Commit
 ```
 
-The transfer uses a database transaction so that both balance updates succeed together or the operation is rolled back.
+A successful deposit records:
+
+- Account number
+- Transaction type
+- Amount
+- Balance after transaction
+- Transaction timestamp
 
 ---
 
-## Transaction History
+## 💸 Withdraw
 
-Every financial transaction is recorded.
+The withdrawal flow is:
 
-Supported transaction types include:
+```text
+Withdraw Request
+      ↓
+Validate Amount
+      ↓
+Check Account
+      ↓
+Get Current Balance
+      ↓
+Check Sufficient Balance
+      ↓
+Update Balance
+      ↓
+Record Transaction
+      ↓
+Commit
+```
+
+The application rejects:
+
+- Invalid amounts
+- Zero or negative amounts
+- Unknown accounts
+- Withdrawals greater than the current balance
+
+---
+
+## 🔄 Transfer Money
+
+Users can transfer money from one account to another.
+
+Validation includes:
+
+- Sender account exists
+- Receiver account exists
+- Amount is valid
+- Sender and receiver are not the same account
+- Sender has sufficient balance
+
+The transfer is treated as one database transaction:
+
+```text
+BEGIN
+  │
+  ├── Decrease Sender Balance
+  │
+  ├── Increase Receiver Balance
+  │
+  ├── Record Transfer Out
+  │
+  ├── Record Transfer In
+  │
+  ▼
+COMMIT
+```
+
+If an operation fails:
+
+```text
+ROLLBACK
+```
+
+This prevents a transfer from leaving the accounts in an inconsistent state.
+
+---
+
+# 📜 Transaction History
+
+The application records financial transactions in a dedicated `transactions` table.
+
+Supported transaction types:
 
 ```text
 Deposit
@@ -187,23 +250,21 @@ Transfer Out
 Transfer In
 ```
 
-Each transaction stores:
+Each transaction contains:
 
-* Account number
-* Transaction type
-* Amount
-* Balance after transaction
-* Transaction timestamp
+- Account number
+- Transaction type
+- Amount
+- Balance after transaction
+- Transaction time
 
-Transactions are displayed in reverse chronological order.
+Transactions are retrieved in reverse order so the newest transaction appears first.
 
 ---
 
 # 🔑 Change Password
 
-Users can change their password after logging in.
-
-The process is:
+The Change Password feature follows this flow:
 
 ```text
 Current Password
@@ -212,241 +273,217 @@ New Password
        ↓
 Confirm Password
        ↓
-Validate
+Validate Inputs
        ↓
 Verify Current Password
+       ↓
+Check New Password
        ↓
 Hash New Password
        ↓
 Update Database
        ↓
-Logout
+Success
        ↓
-Login With New Password
+Return To Login
 ```
 
-### Current Password Validation
+Validation includes:
 
-The current password must be correct before the new password can be stored.
+- Current password cannot be empty
+- New password cannot be empty
+- Confirmation password cannot be empty
+- New and confirmation passwords must match
+- New password must be at least 8 characters
+- New password must differ from the current password
+- Current password must be correct
+- Account must exist
 
-### Password Rules
+The new password is hashed before it is stored.
 
-The project currently uses a simple password-strength rule:
-
-```text
-Minimum 8 characters
-```
-
-The new password must also:
-
-* Match the confirmation password.
-* Be different from the current password.
+Changing a password does **not** change transaction history or account balance.
 
 ---
 
 # 🗑️ Delete Account
 
-Users can permanently delete their account.
+Account deletion requires password verification.
 
-The system requires the user's current password before deletion.
-
-The deletion process is:
+Flow:
 
 ```text
+Delete Account
+      ↓
+Confirm Action
+      ↓
 Enter Password
       ↓
 Verify Password
       ↓
-Delete Transactions
-      ↓
-Delete User
+Delete Account Data
       ↓
 Commit
+      ↓
+Return To Login
 ```
 
-If any part of the database operation fails, the transaction is rolled back.
+If a database operation fails, the transaction is rolled back.
 
-This prevents partially completed account deletion.
+This protects against partially completed deletion.
 
 ---
 
 # 🖥️ GUI
 
-The application is built using **PyQt6**.
+The application is built with **PyQt6** and uses a `QStackedWidget` to navigate between pages.
 
-## Login Page
+## 🔑 Login Page
 
-The Login Page provides:
+Features:
 
-* Username input
-* Password input
-* Show / Hide Password
-* Login button
-* Create Account button
-* Exit button
+- Username input
+- Password input
+- Show / Hide password
+- Login button
+- Create Account button
+- Exit button
 
-### 📸 Screenshot — Login Page
+### Screenshot
 
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/login_page.py ]
-```
+<p align="center">
+  <img src="Docs/Images/GUI/login_page.png" alt="🔑 Login Page screenshot" width="700">
 
 ---
 
-## Create Account Page
+## 👤 Create Account Page
 
-Provides:
+Features:
 
-* Username input
-* Password input
-* Confirm Password input
-* Account creation
-* Validation messages
-* Back button
+- Username input
+- Password input
+- Confirm Password input
+- Account creation
+- Validation messages
+- Back button
 
-### 📸 Screenshot — Create Account Page
+### Screenshot
 
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/create_account_page.py ]
-```
+<p align="center">
+  <img src="Docs/Images/GUI/create_account_page.png" alt="👤 Create Account Page screenshot" width="700">
 
 ---
 
-## Welcome Page
+## 🏦 Welcome Page
 
-After successful login, the user reaches the main banking dashboard.
+The Welcome Page acts as the main banking dashboard.
 
 Available operations include:
 
-```text
-Check Balance
-Deposit
-Withdraw
-Transfer
-Transaction History
-Change Password
-Delete Account
-```
+- Check Balance
+- Deposit
+- Withdraw
+- Transfer
+- Transaction History
+- Change Password
+- Delete Account
 
-### 📸 Screenshot — Welcome Page
+### Screenshot
 
-> **Add screenshot here**
+<p align="center">
+  <img src="Docs/Images/GUI/welcome_page.png" alt="🏦 Welcome Page screenshot" width="700">
 
-```text
-[ SCREENSHOT: GUI/welcome_page.py ]
-```
 
 ---
 
-## Balance Page
+## 💰 Balance Page
 
-Displays the current account balance.
+Displays the current balance of the logged-in account.
 
-### 📸 Screenshot — Balance Page
+### Screenshot
 
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/balance_page.py ]
-```
-
----
-
-## Deposit Page
-
-Allows the user to enter an amount and deposit money.
-
-### 📸 Screenshot — Deposit Page
-
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/deposit_page.py ]
-```
+<p align="center">
+  <img src="Docs/Images/GUI/balance_page.png" alt="💰 Balance Page screenshot" width="700">
+</p>
+<img src="Docs/Images/GUI/balance_page.png" alt="Mini Bank System Balance Page" width="700">
 
 ---
 
-## Withdraw Page
+## 💵 Deposit Page
 
-Allows the user to withdraw money while checking sufficient balance.
+Allows the logged-in user to enter an amount and deposit money.
 
-### 📸 Screenshot — Withdraw Page
+### Screenshot
 
-> **Add screenshot here**
+<p align="center">
+  <img src="Docs/Images/GUI/deposit_page.png" alt="💵 Deposit Page screenshot" width="700">
+</p>
 
-```text
-[ SCREENSHOT: GUI/withdraw_page.py ]
-```
-
----
-
-## Transfer Page
-
-Allows the user to transfer money to another account.
-
-### 📸 Screenshot — Transfer Page
-
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/transfer_page.py ]
-```
 
 ---
 
-## Transaction History Page
+## 💸 Withdraw Page
 
-Displays the user's recorded transactions.
+Allows the user to withdraw money after validating the amount and available balance.
 
-### 📸 Screenshot — Transaction History Page
+### Screenshot
 
-> **Add screenshot here**
+<p align="center">
+  <img src="Docs/Images/GUI/withdraw_page.png" alt="💸 Withdraw Page screenshot" width="700">
 
-```text
-[ SCREENSHOT: GUI/history_page.py ]
-```
 
 ---
 
-## Change Password Page
+## 🔄 Transfer Page
 
-Allows the logged-in user to change their password.
+Allows the logged-in user to transfer money to another account.
 
-### 📸 Screenshot — Change Password Page
+### Screenshot
 
-> **Add screenshot here**
-
-```text
-[ SCREENSHOT: GUI/change_password_page.py ]
-```
+<p align="center">
+  <img src="Docs/Images/GUI/transfer_page.png" alt="🔄 Transfer Page screenshot" width="700">
 
 ---
 
-## Delete Account Page
+## 📜 Transaction History Page
 
-Provides secure account deletion with password verification and confirmation.
+Displays the transactions associated with the logged-in account.
 
-### 📸 Screenshot — Delete Account Page
+### Screenshot
 
-> **Add screenshot here**
+<p align="center">
+  <img src="Docs/Images/GUI/history_page.png" alt="📜 Transaction History Page screenshot" width="700">
 
-```text
-[ SCREENSHOT: GUI/delete_account_page.py ]
-```
+---
+
+## 🔐 Change Password Page
+
+Allows the user to securely change the current password.
+
+### Screenshot
+
+<p align="center">
+  <img src="Docs/Images/GUI/change_password_page.png" alt="🔐 Change Password Page screenshot" width="700">
+
+---
+
+## 🗑️ Delete Account Page
+
+Provides the account-deletion interface and password verification.
+
+### Screenshot
+
+<p align="center">
+  <img src="Docs/Images/GUI/delete_account_page.png" alt="🗑️ Delete Account Page screenshot" width="700">
 
 ---
 
 # 🏗️ Application Architecture
 
-The application follows a layered architecture.
+The application is intentionally divided into three layers.
 
 ```text
                     ┌──────────────┐
-                    │    User      │
+                    │     User     │
                     └──────┬───────┘
                            │
                            ▼
@@ -468,11 +505,74 @@ The application follows a layered architecture.
                  └───────────────────┘
 ```
 
+## GUI Layer
+
+Responsible for:
+
+- Displaying information
+- Collecting user input
+- Handling button clicks
+- Showing success/error dialogs
+- Page navigation
+- Passing user input to Backend services
+
+The GUI does not directly execute SQL.
+
+## Backend Layer
+
+Responsible for:
+
+- Business validation
+- Password verification
+- Password hashing
+- Account operations
+- Banking rules
+- Calling Database operations
+- Returning success/failure results to the GUI
+
+Examples:
+
+```python
+generate_account_number()
+get_account_balance()
+deposit_money()
+withdraw_money()
+transfer_money()
+get_transaction_history()
+delete_account()
+change_password()
+```
+
+## Database Layer
+
+Responsible for:
+
+- Creating tables
+- Reading data
+- Inserting data
+- Updating data
+- Deleting data
+- Database transactions
+- Recording transaction history
+
+Examples:
+
+```python
+get_balance()
+deposit_money()
+withdraw_money()
+transfer_money()
+add_transaction()
+get_transactions()
+update_password()
+delete_account()
+```
+
 ---
 
 # 📂 Project Structure
 
-The current project is organized approximately as follows:
+The application source is organized into separate responsibilities:
 
 ```text
 Mini_Bank_System/
@@ -520,104 +620,67 @@ Mini_Bank_System/
 │       ├── change_password_page_test.py
 │       └── ...
 │
+├── Docs/
+│   └── Images/
+│       ├── GUI/
+│       │   ├── login_page.png
+│       │   ├── create_account_page.png
+│       │   ├── welcome_page.png
+│       │   ├── balance_page.png
+│       │   ├── deposit_page.png
+│       │   ├── withdraw_page.png
+│       │   ├── transfer_page.png
+│       │   ├── history_page.png
+│       │   ├── change_password_page.png
+│       │   └── delete_account_page.png
+│       │
+│       └── Code/
+│           ├── account_sevices/
+│           │   ├── image_1.png
+│           │   ├── image_2.png
+│           │   ├── image_3.png
+│           │   └── image_4.png
+│           │
+│           ├── auth_service/
+│           │   ├── image_1.png
+│           │   ├── image_2.png
+│           │   └── image_3.png
+│           │
+│           ├── database/
+│           │   ├── image_1.png
+│           │   ├── image_2.png
+│           │   ├── image_3.png
+│           │   ├── image_4.png
+│           │   ├── image_5.png
+│           │   ├── image_6.png
+│           │   ├── image_7.png
+│           │   ├── image_8.png
+│           │   ├── image_9.png
+│           │   └── image_10.png
+│           │
+│           ├── validators.png
+│           └── security.png
+│
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
----
-
-# 🧩 Layer Responsibilities
-
-## GUI Layer
-
-The GUI is responsible for:
-
-* Displaying information
-* Collecting user input
-* Handling button clicks
-* Displaying success/error messages
-* Navigating between pages
-
-The GUI does **not** directly access SQLite.
-
-Example:
-
-```text
-GUI
- ↓
-Backend
-```
-
----
-
-## Backend Layer
-
-The Backend contains business logic.
-
-Examples:
-
-```python
-deposit_money()
-withdraw_money()
-transfer_money()
-change_password()
-delete_account()
-get_transaction_history()
-```
-
-The Backend decides whether an operation is valid.
-
-For example:
-
-```text
-Transfer Request
-      ↓
-Validate Amount
-      ↓
-Check Sender
-      ↓
-Check Receiver
-      ↓
-Check Balance
-      ↓
-Database Operation
-```
-
----
-
-## Database Layer
-
-The Database layer is responsible for SQLite operations.
-
-Examples:
-
-```python
-get_balance()
-deposit_money()
-withdraw_money()
-transfer_money()
-add_transaction()
-get_transactions()
-update_password()
-delete_account()
-```
-
-The database layer does not contain GUI logic.
+> **Note:** The folder name `account_sevices` is intentionally kept exactly as specified for the current project structure.
 
 ---
 
 # 🗄️ Database Design
 
-The application currently uses SQLite.
+The application uses SQLite.
 
-Database:
+Database file:
 
 ```text
 Database/xyz_bank.db
 ```
 
-## Users Table
+## `users` Table
 
 ```text
 users
@@ -630,9 +693,7 @@ users
 └── locked_until
 ```
 
----
-
-## Transactions Table
+## `transactions` Table
 
 ```text
 transactions
@@ -644,91 +705,71 @@ transactions
 └── transaction_time
 ```
 
-### Transaction Relationship
-
-Transactions are associated with an account through:
-
-```text
-account_number
-```
-
-Conceptually:
-
-```text
-User Account
-     │
-     ├── Deposit
-     ├── Withdraw
-     ├── Transfer Out
-     └── Transfer In
-```
+The transaction history is linked to an account through `account_number`.
 
 ---
 
 # 🔄 Database Transactions
 
-Financial operations that involve multiple database changes use transactions.
-
-For example, a transfer:
+The transfer operation uses explicit transaction handling:
 
 ```text
 BEGIN
-  │
-  ├── Decrease Sender Balance
-  │
-  ├── Increase Receiver Balance
-  │
-  ├── Record Sender Transaction
-  │
-  ├── Record Receiver Transaction
-  │
-  ▼
+  ↓
+Update Sender
+  ↓
+Update Receiver
+  ↓
+Add Sender Transaction
+  ↓
+Add Receiver Transaction
+  ↓
 COMMIT
 ```
 
-If an operation fails:
+If an exception or failure occurs:
 
 ```text
 ROLLBACK
 ```
 
-This prevents inconsistent account balances.
+This is important because a transfer contains multiple changes that should be treated as one logical operation.
 
 ---
 
 # 🔐 Security Architecture
 
-The project uses bcrypt for password hashing.
-
-```text
-Plain Password
-      │
-      ▼
-bcrypt
-      │
-      ▼
-Password Hash
-      │
-      ▼
-SQLite
-```
-
-During login:
+Password lifecycle:
 
 ```text
 User Password
       │
       ▼
-bcrypt.verify()
+hash_password()
       │
       ▼
-Stored Hash
+bcrypt Hash
+      │
+      ▼
+SQLite
+```
+
+Login/password verification:
+
+```text
+Entered Password
+      │
+      ▼
+verify_password()
+      │
+      ▼
+Stored bcrypt Hash
       │
       ▼
 True / False
 ```
 
-The application never needs to decrypt the stored password hash.
+The application does not decrypt bcrypt hashes.
 
 ---
 
@@ -736,113 +777,42 @@ The application never needs to decrypt the stored password hash.
 
 The project uses:
 
-* **pytest**
-* **pytest-qt**
-* **unittest.mock**
+- `pytest`
+- `pytest-qt`
+- `unittest.mock`
+- `pytest-cov`
 
-Testing is separated according to application layers.
+Tests are divided by layer.
 
 ```text
-                 Tests
-                   │
-       ┌───────────┼───────────┐
-       │           │           │
-       ▼           ▼           ▼
-   Database     Backend       GUI
-    Tests        Tests       Tests
+                    Tests
+                      │
+          ┌───────────┼───────────┐
+          │           │           │
+          ▼           ▼           ▼
+      Database     Backend       GUI
+       Tests        Tests       Tests
 ```
 
----
+## Backend Tests
 
-# 🧪 Backend Testing
+Backend tests isolate the business logic by mocking the database.
 
-Backend tests use mocking to isolate business logic.
-
-Example:
+Example style:
 
 ```python
 @patch("Backend.account_service.sqlitedb")
 def test_transfer_money_database_failure(mock_db):
-    ...
+    mock_db.get_balance.side_effect = [1000, 500]
+    mock_db.transfer_money.return_value = False
+
+    success, message = transfer_money("1001", "1002", "300")
+
+    assert success is False
+    assert message == "Transfer failed."
 ```
 
-The real SQLite database is not used.
-
-Instead:
-
-```text
-Backend
-   ↓
-Mock Database
-```
-
-This makes backend tests:
-
-* Fast
-* Isolated
-* Predictable
-* Independent from database state
-
----
-
-# 🗄️ Database Testing
-
-Database tests use a dedicated test database fixture.
-
-Example:
-
-```python
-def test_reset_login_attempts(test_db):
-    ...
-```
-
-These tests intentionally execute real SQLite operations.
-
-Database tests verify:
-
-* User creation
-* User lookup
-* Balance operations
-* Deposits
-* Withdrawals
-* Transfers
-* Transactions
-* Password updates
-* Account deletion
-* Login attempt handling
-
----
-
-# 🖥️ GUI Testing
-
-GUI tests use **pytest-qt**.
-
-Example:
-
-```python
-@patch("GUI.transfer_page.transfer_money")
-def test_transfer_button_click(mock_transfer, qtbot):
-    ...
-```
-
-GUI tests verify things such as:
-
-* Page creation
-* Button clicks
-* Input fields
-* Backend calls
-* Navigation
-* Success/error handling
-
-The backend is mocked so that GUI tests focus on GUI behavior.
-
----
-
-# 🎭 Mocking Strategy
-
-The project uses mocking to isolate individual layers.
-
-### Backend Test
+This means:
 
 ```text
 Test
@@ -852,7 +822,72 @@ Backend
 Mock Database
 ```
 
-### GUI Test
+The real SQLite database is not required for these tests.
+
+## Database Tests
+
+Database tests use the `test_db` fixture and execute real SQLite operations.
+
+Example style:
+
+```python
+def test_reset_login_attempts(test_db):
+    test_db.create_user("1234567", "prashant", "password123")
+
+    test_db.update_failed_attempts("prashant", 3)
+    test_db.lock_user("prashant", "2099-01-01T00:00:00")
+
+    test_db.reset_login_attempts("prashant")
+
+    attempts = test_db.get_failed_attempts("prashant")
+    locked_until = test_db.get_locked_until("prashant")
+
+    assert attempts == 0
+    assert locked_until is None
+```
+
+## GUI Tests
+
+GUI tests use `pytest-qt` and mock the Backend.
+
+Example style:
+
+```python
+@patch("GUI.transfer_page.transfer_money")
+def test_transfer_button_click(mock_transfer, qtbot):
+    page = TransferPage(None)
+    qtbot.addWidget(page)
+
+    page.account_number = "1001"
+    page.receiver_input.setText("1002")
+    page.amount_input.setText("300")
+
+    mock_transfer.return_value = (True, "Success")
+
+    page.transfer_btn.click()
+
+    mock_transfer.assert_called_once()
+```
+
+The GUI test therefore focuses on GUI behavior rather than database behavior.
+
+---
+
+# 🎭 Mocking Strategy
+
+The project intentionally tests each layer in isolation.
+
+### Backend
+
+```text
+Test
+ ↓
+Backend
+ ↓
+Mock Database
+```
+
+### GUI
 
 ```text
 Test
@@ -862,7 +897,7 @@ GUI
 Mock Backend
 ```
 
-### Database Test
+### Database
 
 ```text
 Test
@@ -872,13 +907,19 @@ Real Test Database
 SQLite
 ```
 
-This separation makes it easier to determine exactly where a problem exists.
+Benefits:
+
+- Faster tests
+- Isolated failures
+- Predictable behavior
+- Easier debugging
+- No unnecessary dependency between layers
 
 ---
 
 # 📊 Test Coverage
 
-Test coverage is measured using `pytest-cov`.
+Coverage is measured with `pytest-cov`.
 
 Run:
 
@@ -886,156 +927,175 @@ Run:
 pytest --cov=Backend --cov=Database --cov-report=term-missing
 ```
 
-Coverage reports help identify code paths that have not yet been tested.
+Coverage was actively used during development to identify untested branches.
 
-The project uses coverage not merely as a percentage target, but as a tool for finding missing test scenarios.
+For example, missing coverage was investigated for:
 
----
+- Password validation branches
+- Account-not-found branches
+- Database failure branches
+- Transfer failure branches
+- Delete-account failure branches
+- GUI error paths
 
-# 🧠 Important Software Engineering Concepts Learned
-
-This project has been used to practice:
-
-### Python
-
-* Classes
-* Objects
-* Methods
-* `self`
-* Exception handling
-* Tuples
-* Functions
-* Imports
-* Modules
-* Package structure
-
-### GUI Development
-
-* PyQt6
-* Widgets
-* Layouts
-* Signals and slots
-* `QStackedWidget`
-* Dialog boxes
-* GUI state management
-
-### Backend Development
-
-* Service-layer architecture
-* Business validation
-* Separation of concerns
-* Error handling
-* Return-value conventions
-
-### Database
-
-* SQLite
-* SQL queries
-* Parameterized queries
-* `SELECT`
-* `INSERT`
-* `UPDATE`
-* `DELETE`
-* `COMMIT`
-* `ROLLBACK`
-* Database transactions
-
-### Security
-
-* bcrypt
-* Password hashing
-* Password verification
-* Re-authentication
-* Password change
-* Account deletion security
-* Account lockout
-
-### Testing
-
-* pytest
-* pytest-qt
-* Fixtures
-* Assertions
-* Mocking
-* `@patch`
-* GUI testing
-* Database testing
-* Code coverage
-
-### Software Architecture
-
-* Layered architecture
-* Separation of responsibilities
-* GUI → Backend → Database
-* Dependency isolation
-* Transaction boundaries
-* Test isolation
+The goal is not simply to display a high percentage. Coverage is used to discover which logical paths still need tests.
 
 ---
 
-# 📸 Code Architecture Screenshots
+# 📸 Code Implementation Screenshots
 
-This section can be used to document the implementation and learning process.
+The following screenshots document important parts of the implementation.
 
-## Backend Service
+## Backend — `account_service.py`
 
-> **Attach screenshot of `Backend/account_service.py` here**
+The Account Service contains banking business logic such as:
 
-```text
-[ SCREENSHOT — Backend/account_service.py ]
-```
+- Account number generation
+- Balance retrieval
+- Deposit
+- Withdrawal
+- Transfer
+- Transaction history
+- Account deletion
+- Password change
 
----
+There are **4 screenshots** for this file.
 
-## Database Implementation
+### Account Service — Image 1
 
-> **Attach screenshot of `Database/sqlitedb.py` here**
+<p align="center">
+  <img src="Docs/Images/Code/account_service/image_1.png" alt="Account Service — Image 1 code screenshot" width="850">
 
-```text
-[ SCREENSHOT — Database/sqlitedb.py ]
-```
+### Account Service — Image 2
 
----
+<p align="center">
+  <img src="Docs/Images/Code/account_service/image_2.png" alt="Account Service — Image 2 code screenshot" width="850">
 
-## Authentication & Security
+### Account Service — Image 3
 
-> **Attach screenshot of `Backend/security.py` here**
+<p align="center">
+  <img src="Docs/Images/Code/account_service/image_3.png" alt="Account Service — Image 3 code screenshot" width="850">
 
-```text
-[ SCREENSHOT — Backend/security.py ]
-```
+### Account Service — Image 4
 
----
-
-## GUI Implementation
-
-> **Attach screenshot of one or more GUI page implementations here**
-
-```text
-[ SCREENSHOT — GUI implementation ]
-```
+<p align="center">
+  <img src="Docs/Images/Code/account_service/image_4.png" alt="Account Service — Image 4 code screenshot" width="850">
 
 ---
 
-## Testing
+## Backend — `auth_service.py`
 
-> **Attach screenshot of pytest test cases here**
+The Authentication Service handles authentication-related business logic.
 
-```text
-[ SCREENSHOT — Tests ]
-```
+There are **3 screenshots** for this file.
+
+### Authentication Service — Image 1
+
+<p align="center">
+  <img src="Docs/Images/Code/auth_service/image_1.png" alt="Authentication Service — Image 1 code screenshot" width="850">
+
+### Authentication Service — Image 2
+
+<p align="center">
+  <img src="Docs/Images/Code/auth_service/image_2.png" alt="Authentication Service — Image 2 code screenshot" width="850">
+
+### Authentication Service — Image 3
+
+<p align="center">
+  <img src="Docs/Images/Code/auth_service/image_3.png" alt="Authentication Service — Image 3 code screenshot" width="850">
 
 ---
 
-## Test Coverage
+## Database — `sqlitedb.py`
 
-> **Attach screenshot of pytest coverage output here**
+The Database layer contains SQLite operations for:
 
-```text
-[ SCREENSHOT — Test Coverage ]
-```
+- User creation
+- User lookup
+- Password lookup
+- Balance operations
+- Deposits
+- Withdrawals
+- Transfers
+- Transaction recording
+- Transaction retrieval
+- Password updates
+- Account deletion
+- Login-attempt handling
+
+There are **10 screenshots** for the Database implementation.
+
+### Database — Image 1
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_1.png" alt="Database — Image 1 code screenshot" width="850">
+
+### Database — Image 2
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_2.png" alt="Database — Image 2 code screenshot" width="850">
+
+### Database — Image 3
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_3.png" alt="Database — Image 3 code screenshot" width="850">
+
+### Database — Image 4
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_4.png" alt="Database — Image 4 code screenshot" width="850">
+
+### Database — Image 5
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_5.png" alt="Database — Image 5 code screenshot" width="850">
+
+### Database — Image 6
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_6.png" alt="Database — Image 6 code screenshot" width="850">
+
+### Database — Image 7
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_7.png" alt="Database — Image 7 code screenshot" width="850">
+
+### Database — Image 8
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_8.png" alt="Database — Image 8 code screenshot" width="850">
+
+### Database — Image 9
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_9.png" alt="Database — Image 9 code screenshot" width="850">
+
+### Database — Image 10
+
+<p align="center">
+  <img src="Docs/Images/Code/database/image_10.png" alt="Database — Image 10 code screenshot" width="850">
 
 ---
+
+## Validators
+
+<p align="center">
+  <img src="Docs/Images/Code/validators.png" alt="Validators code" width="850">
+</p>
+
+The validation layer contains reusable validation rules used by the application.
+
+---
+
+## Security
+
+<p align="center">
+  <img src="Docs/Images/Code/security.png" alt="Security code" width="850">
+</p>
+
+The security module contains password hashing and password verification functionality.
+
+
 
 # ⚙️ Installation
 
@@ -1045,17 +1105,13 @@ This section can be used to document the implementation and learning process.
 git clone https://github.com/namansinghpatel/Python_Progs/tree/main/Python_Codes/Mini_Bank_System
 ```
 
-> **Note:** If this repository is later moved to a dedicated GitHub repository, update this URL accordingly.
+> If the repository is later moved to a dedicated GitHub repository, update the URL accordingly.
 
----
-
-## Navigate to Project
+## Navigate to the Project
 
 ```bash
 cd Mini_Bank_System
 ```
-
----
 
 ## Create Virtual Environment
 
@@ -1083,9 +1139,7 @@ Activate:
 source venv/bin/activate
 ```
 
----
-
-# 📦 Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -1093,7 +1147,7 @@ pip install -r requirements.txt
 
 ---
 
-# ▶️ Run Application
+# ▶️ Running the Application
 
 ```bash
 python main.py
@@ -1101,7 +1155,7 @@ python main.py
 
 ---
 
-# 🧪 Run Tests
+# 🧪 Running Tests
 
 Run all tests:
 
@@ -1109,31 +1163,31 @@ Run all tests:
 pytest
 ```
 
-Verbose output:
+Verbose:
 
 ```bash
 pytest -v
 ```
 
-Run Backend tests:
+Backend tests:
 
 ```bash
 pytest Tests/test_Backend/
 ```
 
-Run GUI tests:
+GUI tests:
 
 ```bash
 pytest Tests/test_GUI/
 ```
 
-Run Database tests:
+Database tests:
 
 ```bash
 pytest Tests/sqlitedb_test.py
 ```
 
-Run with coverage:
+Coverage:
 
 ```bash
 pytest --cov=Backend --cov=Database --cov-report=term-missing
@@ -1141,14 +1195,16 @@ pytest --cov=Backend --cov=Database --cov-report=term-missing
 
 ---
 
-# 🔄 Application Flow
+# 🔄 Application Flows
 
 ## Create Account
 
 ```text
 Create Account
       ↓
-Validate Input
+Validate Username
+      ↓
+Validate Password
       ↓
 Check Duplicate Username
       ↓
@@ -1161,8 +1217,6 @@ Store User
 Success
 ```
 
----
-
 ## Login
 
 ```text
@@ -1172,18 +1226,14 @@ Validate Input
   ↓
 Check Account Lock
   ↓
-Fetch Password Hash
+Fetch Stored Password Hash
   ↓
 Verify Password
   ↓
-Reset Attempts
+Reset Login Attempts
   ↓
 Welcome Page
 ```
-
-Failed authentication follows the account-locking rules implemented by the application.
-
----
 
 ## Deposit
 
@@ -1200,8 +1250,6 @@ Record Transaction
       ↓
 Commit
 ```
-
----
 
 ## Withdraw
 
@@ -1220,8 +1268,6 @@ Record Transaction
       ↓
 Commit
 ```
-
----
 
 ## Transfer
 
@@ -1245,13 +1291,11 @@ Record Both Transactions
 COMMIT
 ```
 
-If something fails:
+Failure:
 
 ```text
 ROLLBACK
 ```
-
----
 
 ## Change Password
 
@@ -1266,100 +1310,120 @@ Validate New Password
       ↓
 Hash New Password
       ↓
-Update Password
+Update Database
       ↓
 Success
       ↓
 Return To Login
 ```
 
----
-
 ## Delete Account
 
 ```text
 Delete Account
       ↓
-Confirm User Action
+Confirm Action
       ↓
 Verify Password
       ↓
-BEGIN TRANSACTION
+Delete Account Data
       ↓
-Delete Transactions
-      ↓
-Delete User
-      ↓
-COMMIT
+Commit
       ↓
 Return To Login
 ```
 
 ---
 
-# 🛣️ Future Roadmap
+# 🧠 Software Engineering Concepts Learned
 
-The following features are planned for future versions.
+## Python
 
-## Banking Features
+- Classes
+- Objects
+- Methods
+- `self`
+- Functions
+- Imports
+- Modules
+- Packages
+- Tuples
+- Exception handling
+- Return values
 
-* [ ] Profile / Account Dashboard
-* [ ] Mini Statement
-* [ ] Transaction Search & Filtering
-* [ ] Export Bank Statement
-* [ ] Account Information Page
-* [ ] Interest Calculator
-* [ ] Loan Calculator
+## GUI Development
 
----
+- PyQt6
+- `QWidget`
+- `QLabel`
+- `QPushButton`
+- `QLineEdit`
+- Layouts
+- Signals and slots
+- `QStackedWidget`
+- `QMessageBox`
+- GUI state management
+
+## Backend
+
+- Service-layer architecture
+- Business validation
+- Separation of concerns
+- Error handling
+- GUI/backend separation
+- Consistent success/failure return values
+
+## Database
+
+- SQLite
+- SQL queries
+- Parameterized queries
+- `SELECT`
+- `INSERT`
+- `UPDATE`
+- `DELETE`
+- `COMMIT`
+- `ROLLBACK`
+- Database transactions
+- Transaction history
 
 ## Security
 
-* [ ] Forgot Password
-* [ ] OTP Verification
-* [ ] Session Management
-* [ ] Role-Based Access Control
-* [ ] Admin Authentication
-* [ ] Audit Logs
-* [ ] Stronger Password Policies
-* [ ] Additional protection for sensitive operations
-
----
-
-## Administration
-
-* [ ] Admin Dashboard
-* [ ] View All Accounts
-* [ ] Search Accounts
-* [ ] Lock / Unlock Accounts
-* [ ] Account Management
-* [ ] Bank-wide Statistics
-
----
+- bcrypt
+- Password hashing
+- Password verification
+- Secure password storage
+- Re-authentication
+- Password change
+- Account deletion protection
+- Account locking
 
 ## Testing
 
-* [ ] Expand GUI Navigation Coverage
-* [ ] End-to-End Tests
-* [ ] Integration Tests
-* [ ] Performance Testing
-* [ ] Security Testing
-* [ ] Increase and maintain high test coverage
+- pytest
+- pytest-qt
+- Fixtures
+- Assertions
+- `@patch`
+- `MagicMock`
+- GUI testing
+- Backend testing
+- Database testing
+- Test isolation
+- Coverage analysis
 
 ---
 
-# 🎯 Learning Objectives
+# 🔁 Development Workflow
 
-This project is being developed incrementally rather than being generated as one large application.
-
-Each feature follows the same development cycle:
+Each feature was developed incrementally:
 
 ```text
 Requirement
     ↓
-Understand Flow
+Understand the Flow
     ↓
-Database Design
+Database Implementation
     ↓
 Backend Implementation
     ↓
@@ -1371,62 +1435,102 @@ Backend Tests
     ↓
 GUI Tests
     ↓
+Run Test Suite
+    ↓
 Coverage Analysis
     ↓
-Bug Fixing
+Fix Failures
+    ↓
+Repeat
 ```
 
-This workflow is one of the most important outcomes of the project.
+This project therefore focuses not only on writing code, but also on:
 
-The goal is to understand **how software is designed, implemented, tested, debugged, and improved**, rather than simply writing code that works.
+- Understanding the reason behind each layer
+- Debugging test failures
+- Improving test coverage
+- Separating responsibilities
+- Handling database failures
+- Using mocks correctly
+- Testing GUI behavior independently
 
 ---
 
-# 📚 Project Learning Journey
+# 🛣️ Future Roadmap
 
-The Mini Bank System started as a basic Python banking application and has gradually evolved into a layered desktop application.
+## Banking
 
-Major milestones include:
+- [ ] Profile / Account Dashboard
+- [ ] Mini Statement
+- [ ] Transaction Search and Filtering
+- [ ] Export Bank Statement
+- [ ] Interest Calculator
+- [ ] Loan Calculator
+
+## Security
+
+- [ ] Forgot Password
+- [ ] OTP Verification
+- [ ] Session Management
+- [ ] Role-Based Access Control
+- [ ] Admin Authentication
+- [ ] Audit Logs
+- [ ] Stronger Password Policies
+- [ ] Additional protection for sensitive operations
+
+## Administration
+
+- [ ] Admin Dashboard
+- [ ] View All Accounts
+- [ ] Search Accounts
+- [ ] Lock / Unlock Accounts
+- [ ] Account Management
+- [ ] Bank-wide Statistics
+
+## Testing
+
+- [ ] Expand GUI navigation coverage
+- [ ] End-to-End tests
+- [ ] Integration tests
+- [ ] Performance tests
+- [ ] Security tests
+- [ ] Maintain high test coverage
+
+---
+
+# 🎯 Project Learning Goal
+
+The project is being developed as a progressive learning exercise rather than as a single large code dump.
+
+The central development loop is:
 
 ```text
-Basic Python Banking Logic
-          ↓
-SQLite Database
-          ↓
-Authentication
-          ↓
-PyQt6 GUI
-          ↓
-Backend / Database Separation
-          ↓
-Secure Password Hashing
-          ↓
-Account Locking
-          ↓
-Financial Transactions
-          ↓
-Transaction History
-          ↓
-Database Transactions
-          ↓
-Account Deletion
-          ↓
-Password Change
-          ↓
-Automated Testing
-          ↓
-Mocking & Test Isolation
-          ↓
-Coverage Analysis
+Learn
+  ↓
+Design
+  ↓
+Build
+  ↓
+Test
+  ↓
+Debug
+  ↓
+Improve
+  ↓
+Repeat
 ```
+
+The objective is to understand how a software project evolves from basic functionality into a structured, tested application.
 
 ---
 
 # ⚠️ Disclaimer
 
-This application is a **learning project** and is not intended for handling real financial accounts, real money, or production banking data.
+This is a **learning project**.
 
-A production banking system would require significantly stronger security, compliance, auditing, encryption, infrastructure, reliability, monitoring, and regulatory controls.
+It is not intended to handle real financial accounts, real money, or production banking data.
+
+A real banking system would require substantially stronger security, encryption, compliance, auditing, authorization, infrastructure, monitoring, reliability, disaster recovery, and regulatory controls.
 
 ---
 
@@ -1436,19 +1540,20 @@ A production banking system would require significantly stronger security, compl
 
 Built as a learning project to understand:
 
-* Python application development
-* PyQt6 GUI development
-* SQLite database design
-* Authentication and security
-* Backend architecture
-* Automated testing
-* Software engineering principles
+- Python application development
+- PyQt6 GUI development
+- SQLite database design
+- Authentication and security
+- Backend architecture
+- Automated testing
+- Mocking
+- Software engineering practices
 
 ---
 
 # ⭐ Project Goal
 
-The long-term goal of this project is to continuously evolve a simple Python banking application into a more complete software system while learning professional development practices along the way.
+The long-term goal is to continue evolving this Mini Bank System while learning professional software development practices.
 
 ```text
 Learn
@@ -1465,3 +1570,53 @@ Repeat
 ```
 
 ---
+
+## 📁 Documentation Folder
+
+The complete documentation image structure used by this README is:
+
+```text
+Docs/
+└── Images/
+    │
+    ├── GUI/
+    │   ├── login_page.png
+    │   ├── create_account_page.png
+    │   ├── welcome_page.png
+    │   ├── balance_page.png
+    │   ├── deposit_page.png
+    │   ├── withdraw_page.png
+    │   ├── transfer_page.png
+    │   ├── history_page.png
+    │   ├── change_password_page.png
+    │   └── delete_account_page.png
+    │
+    └── Code/
+        ├── account_sevices/
+        │   ├── image_1.png
+        │   ├── image_2.png
+        │   ├── image_3.png
+        │   └── image_4.png
+        │
+        ├── auth_service/
+        │   ├── image_1.png
+        │   ├── image_2.png
+        │   └── image_3.png
+        │
+        ├── database/
+        │   ├── image_1.png
+        │   ├── image_2.png
+        │   ├── image_3.png
+        │   ├── image_4.png
+        │   ├── image_5.png
+        │   ├── image_6.png
+        │   ├── image_7.png
+        │   ├── image_8.png
+        │   ├── image_9.png
+        │   └── image_10.png
+        │
+        ├── validators.png
+        └── security.png
+```
+
+> The screenshot files themselves are not included in this generated package because they were not uploaded in this conversation. Place your existing screenshots at the exact paths above and the README links will work on GitHub.
