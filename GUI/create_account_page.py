@@ -1,5 +1,13 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QVBoxLayout,
+    QHBoxLayout,
+    QMessageBox,
+    QFrame,
+)
 from PyQt6.QtCore import Qt
 from Backend.auth_service import create_user
 
@@ -12,73 +20,489 @@ class CreateAccountPage(QWidget):
 
         self.stack = stack
 
-        layout = QVBoxLayout()
+        # --------------------------------
+        # Main Page Layout
+        # --------------------------------
 
-        title = QLabel("➕ CREATE NEW ACCOUNT")
-        title.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(30, 20, 30, 20)
+
+        # --------------------------------
+        # Bank Title
+        # --------------------------------
+
+        title = QLabel("🏦 XYZ Banking System")
+
+        title.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )
 
         title.setStyleSheet("""
             QLabel {
-                font-size: 22px;
+                font-size: 28px;
                 font-weight: bold;
-                color: #C62828;
-                padding: 15px;
+                color: #1565C0;
+                padding: 10px;
             }
         """)
 
+        # --------------------------------
+        # Create Account Card
+        # --------------------------------
+
+        account_card = QFrame()
+
+        account_card.setFixedWidth(380)
+
+        account_card.setStyleSheet("""
+            QFrame {
+                background-color: white;
+                border: 1px solid #D0D7DE;
+                border-radius: 15px;
+            }
+        """)
+
+        # --------------------------------
+        # Card Layout
+        # --------------------------------
+
+        card_layout = QVBoxLayout()
+
+        card_layout.setContentsMargins(
+            35,
+            30,
+            35,
+            30
+        )
+
+        card_layout.setSpacing(15)
+
+        account_card.setLayout(card_layout)
+
+        # --------------------------------
+        # Card Title
+        # --------------------------------
+
+        account_title = QLabel(
+            "Create New Account"
+        )
+
+        account_title.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )
+
+        account_title.setStyleSheet("""
+            QLabel {
+                font-size: 24px;
+                font-weight: bold;
+                color: #1565C0;
+                border: none;
+            }
+        """)
+
+        # --------------------------------
+        # Username Label
+        # --------------------------------
+
+        username_label = QLabel(
+            "Username"
+        )
+
+        username_label.setStyleSheet("""
+            QLabel {
+                font-size: 14px;
+                font-weight: bold;
+                color: #333333;
+                border: none;
+            }
+        """)
+
+        # --------------------------------
+        # Username Input
+        # --------------------------------
+
         self.username = QLineEdit()
-        self.username.setPlaceholderText("Username")
+
+        self.username.setPlaceholderText(
+            "Enter your username"
+        )
+
+        self.username.setFixedHeight(42)
+
+        self.username.setStyleSheet("""
+            QLineEdit {
+                border: 1px solid #B0BEC5;
+                border-radius: 7px;
+                padding: 8px;
+                font-size: 15px;
+                background-color: white;
+            }
+
+            QLineEdit:focus {
+                border: 2px solid #1565C0;
+            }
+        """)
+
+        # --------------------------------
+        # Password Label
+        # --------------------------------
+
+        password_label = QLabel(
+            "Password"
+        )
+
+        password_label.setStyleSheet("""
+            QLabel {
+                font-size: 14px;
+                font-weight: bold;
+                color: #333333;
+                border: none;
+            }
+        """)
+
+        # --------------------------------
+        # Password Input
+        # --------------------------------
 
         self.password = QLineEdit()
-        self.password.setPlaceholderText("Password")
-        self.password.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.show_password_btn = QPushButton("👁")
-        self.show_password_btn.clicked.connect(self.toggle_password)
+        self.password.setPlaceholderText(
+            "Enter your password"
+        )
+
+        self.password.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
+
+        self.password.setFixedHeight(42)
+
+        self.password.setStyleSheet("""
+            QLineEdit {
+                border: 1px solid #B0BEC5;
+                border-radius: 7px;
+                padding: 8px;
+                font-size: 15px;
+                background-color: white;
+            }
+
+            QLineEdit:focus {
+                border: 2px solid #1565C0;
+            }
+        """)
+
+        # --------------------------------
+        # Show Password Button
+        # --------------------------------
+
+        self.show_password_btn = QPushButton(
+            "👁"
+        )
+
+        self.show_password_btn.setFixedSize(
+            42,
+            42
+        )
+
+        self.show_password_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #ECEFF1;
+                border: 1px solid #B0BEC5;
+                border-radius: 7px;
+                font-size: 17px;
+            }
+
+            QPushButton:hover {
+                background-color: #CFD8DC;
+            }
+        """)
+
+        self.show_password_btn.clicked.connect(
+            self.toggle_password
+        )
+
+        # --------------------------------
+        # Password Layout
+        # --------------------------------
+
+        password_layout = QHBoxLayout()
+
+        password_layout.setSpacing(6)
+
+        password_layout.addWidget(
+            self.password
+        )
+
+        password_layout.addWidget(
+            self.show_password_btn
+        )
+
+        # --------------------------------
+        # Confirm Password Label
+        # --------------------------------
+
+        repassword_label = QLabel(
+            "Confirm Password"
+        )
+
+        repassword_label.setStyleSheet("""
+            QLabel {
+                font-size: 14px;
+                font-weight: bold;
+                color: #333333;
+                border: none;
+            }
+        """)
+
+        # --------------------------------
+        # Confirm Password Input
+        # --------------------------------
 
         self.repassword = QLineEdit()
-        self.repassword.setPlaceholderText("Re-enter Password")
-        self.repassword.setEchoMode(QLineEdit.EchoMode.Password)
 
-        submit_btn = QPushButton("Submit")
-        submit_btn.clicked.connect(self.submit_clicked)
+        self.repassword.setPlaceholderText(
+            "Re-enter your password"
+        )
 
-        back_btn = QPushButton("⬅️ Back")
+        self.repassword.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
 
-        back_btn.clicked.connect(self.back_clicked)
+        self.repassword.setFixedHeight(42)
 
-        layout.addWidget(title)
-        layout.addWidget(self.username)
-        password_layout = QHBoxLayout()
-        password_layout.addWidget(self.password)
-        password_layout.addWidget(self.show_password_btn)
-        layout.addLayout(password_layout)
-        layout.addWidget(self.repassword)
-        layout.addWidget(submit_btn)
-        layout.addWidget(back_btn)
-        self.setLayout(layout)
+        self.repassword.setStyleSheet("""
+            QLineEdit {
+                border: 1px solid #B0BEC5;
+                border-radius: 7px;
+                padding: 8px;
+                font-size: 15px;
+                background-color: white;
+            }
 
+            QLineEdit:focus {
+                border: 2px solid #1565C0;
+            }
+        """)
+
+        # --------------------------------
+        # Submit Button
+        # --------------------------------
+
+        submit_btn = QPushButton(
+            "Create Account"
+        )
+
+        submit_btn.setFixedHeight(45)
+
+        submit_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #1565C0;
+                color: white;
+                border: none;
+                border-radius: 7px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            QPushButton:hover {
+                background-color: #1E88E5;
+            }
+
+            QPushButton:pressed {
+                background-color: #0D47A1;
+            }
+        """)
+
+        submit_btn.clicked.connect(
+            self.submit_clicked
+        )
+
+        # --------------------------------
+        # Back Button
+        # --------------------------------
+
+        back_btn = QPushButton(
+            "⬅ Back to Login"
+        )
+
+        back_btn.setFixedHeight(40)
+
+        back_btn.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                color: #1565C0;
+                border: 1px solid #1565C0;
+                border-radius: 7px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            QPushButton:hover {
+                background-color: #E3F2FD;
+            }
+        """)
+
+        back_btn.clicked.connect(
+            self.back_clicked
+        )
+
+        # --------------------------------
+        # Add Widgets To Card
+        # --------------------------------
+
+        card_layout.addWidget(
+            account_title
+        )
+
+        card_layout.addSpacing(10)
+
+        card_layout.addWidget(
+            username_label
+        )
+
+        card_layout.addWidget(
+            self.username
+        )
+
+        card_layout.addWidget(
+            password_label
+        )
+
+        card_layout.addLayout(
+            password_layout
+        )
+
+        card_layout.addWidget(
+            repassword_label
+        )
+
+        card_layout.addWidget(
+            self.repassword
+        )
+
+        card_layout.addSpacing(10)
+
+        card_layout.addWidget(
+            submit_btn
+        )
+
+        card_layout.addWidget(
+            back_btn
+        )
+
+        # --------------------------------
+        # Main Page Layout
+        # --------------------------------
+
+        main_layout.addWidget(
+            title
+        )
+
+        main_layout.addStretch()
+
+        main_layout.addWidget(
+            account_card,
+            alignment=Qt.AlignmentFlag.AlignCenter
+        )
+
+        main_layout.addStretch()
+
+        # --------------------------------
+        # Footer
+        # --------------------------------
+
+        footer = QLabel(
+            "Secure Banking • XYZ Bank"
+        )
+
+        footer.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )
+
+        footer.setStyleSheet("""
+            QLabel {
+                color: #78909C;
+                font-size: 12px;
+                padding: 8px;
+            }
+        """)
+        main_layout.addWidget(
+            footer)
+        # --------------------------------
+        # Set Main Layout
+        # --------------------------------
+        self.setLayout(
+            main_layout)
+        # -------------------------------
+        # Page Background
+        # --------------------------------
+        self.setStyleSheet("""
+            CreateAccountPage {
+                background-color: #F5F7FA;
+            }
+        """)
+    # --------------------------------
+    # Submit
+    # --------------------------------
     def submit_clicked(self):
-
         username = self.username.text()
         password = self.password.text()
         re_password = self.repassword.text()
-        success, message = create_user(username, password, re_password)
+        success, message = create_user(
+            username,
+            password,
+            re_password)
 
         if success:
-            QMessageBox.information(self, "Success", message)
+
+            QMessageBox.information(
+                self,
+                "Success",
+                message
+            )
+
             self.stack.setCurrentIndex(0)
+
         else:
-            QMessageBox.warning(self, "Validation Error", message)
+
+            QMessageBox.warning(
+                self,
+                "Validation Error",
+                message
+            )
+
+    # --------------------------------
+    # Back Button
+    # --------------------------------
 
     def back_clicked(self):
+
         self.stack.setCurrentIndex(0)
 
+    # --------------------------------
+    # Toggle Password
+    # --------------------------------
+
     def toggle_password(self):
-        if self.password.echoMode() == QLineEdit.EchoMode.Password:
-            self.password.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.show_password_btn.setText("🙈")
+
+        if (
+            self.password.echoMode()
+            == QLineEdit.EchoMode.Password
+        ):
+
+            self.password.setEchoMode(
+                QLineEdit.EchoMode.Normal
+            )
+
+            self.show_password_btn.setText(
+                "🙈"
+            )
 
         else:
-            self.password.setEchoMode(QLineEdit.EchoMode.Password)
-            self.show_password_btn.setText("👁")
+
+            self.password.setEchoMode(
+                QLineEdit.EchoMode.Password
+            )
+
+            self.show_password_btn.setText(
+                "👁"
+            )

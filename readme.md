@@ -942,10 +942,6 @@ The goal is not simply to display a high percentage. Coverage is used to discove
 
 ---
 
-# 📸 Code Implementation Screenshots
-
-The following screenshots document important parts of the implementation.
-
 ## Backend — `account_service.py`
 
 The Account Service contains banking business logic such as:
@@ -959,50 +955,14 @@ The Account Service contains banking business logic such as:
 - Account deletion
 - Password change
 
-There are **4 screenshots** for this file.
 
-### Account Service — Image 1
 
-<p align="center">
-  <img src="Docs/Images/Code/account_service/image_1.png" alt="Account Service — Image 1 code screenshot" width="850">
-
-### Account Service — Image 2
-
-<p align="center">
-  <img src="Docs/Images/Code/account_service/image_2.png" alt="Account Service — Image 2 code screenshot" width="850">
-
-### Account Service — Image 3
-
-<p align="center">
-  <img src="Docs/Images/Code/account_service/image_3.png" alt="Account Service — Image 3 code screenshot" width="850">
-
-### Account Service — Image 4
-
-<p align="center">
-  <img src="Docs/Images/Code/account_service/image_4.png" alt="Account Service — Image 4 code screenshot" width="850">
-
----
 
 ## Backend — `auth_service.py`
 
 The Authentication Service handles authentication-related business logic.
 
-There are **3 screenshots** for this file.
 
-### Authentication Service — Image 1
-
-<p align="center">
-  <img src="Docs/Images/Code/auth_service/image_1.png" alt="Authentication Service — Image 1 code screenshot" width="850">
-
-### Authentication Service — Image 2
-
-<p align="center">
-  <img src="Docs/Images/Code/auth_service/image_2.png" alt="Authentication Service — Image 2 code screenshot" width="850">
-
-### Authentication Service — Image 3
-
-<p align="center">
-  <img src="Docs/Images/Code/auth_service/image_3.png" alt="Authentication Service — Image 3 code screenshot" width="850">
 
 ---
 
@@ -1023,65 +983,10 @@ The Database layer contains SQLite operations for:
 - Account deletion
 - Login-attempt handling
 
-There are **10 screenshots** for the Database implementation.
 
-### Database — Image 1
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_1.png" alt="Database — Image 1 code screenshot" width="850">
-
-### Database — Image 2
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_2.png" alt="Database — Image 2 code screenshot" width="850">
-
-### Database — Image 3
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_3.png" alt="Database — Image 3 code screenshot" width="850">
-
-### Database — Image 4
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_4.png" alt="Database — Image 4 code screenshot" width="850">
-
-### Database — Image 5
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_5.png" alt="Database — Image 5 code screenshot" width="850">
-
-### Database — Image 6
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_6.png" alt="Database — Image 6 code screenshot" width="850">
-
-### Database — Image 7
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_7.png" alt="Database — Image 7 code screenshot" width="850">
-
-### Database — Image 8
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_8.png" alt="Database — Image 8 code screenshot" width="850">
-
-### Database — Image 9
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_9.png" alt="Database — Image 9 code screenshot" width="850">
-
-### Database — Image 10
-
-<p align="center">
-  <img src="Docs/Images/Code/database/image_10.png" alt="Database — Image 10 code screenshot" width="850">
-
----
 
 ## Validators
 
-<p align="center">
-  <img src="Docs/Images/Code/validators.png" alt="Validators code" width="850">
-</p>
 
 The validation layer contains reusable validation rules used by the application.
 
@@ -1089,9 +994,7 @@ The validation layer contains reusable validation rules used by the application.
 
 ## Security
 
-<p align="center">
-  <img src="Docs/Images/Code/security.png" alt="Security code" width="850">
-</p>
+
 
 The security module contains password hashing and password verification functionality.
 
