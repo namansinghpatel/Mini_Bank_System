@@ -1363,7 +1363,7 @@ The Account Service contains the core banking business logic:
 - Account deletion
 - Password change
 
-🔗 [View `account_service.py` on GitHub](https://github.com/namansinghpatel/Python_Progs/blob/main/Python_Codes/Mini_Bank_System/Backend/account_service.py)
+🔗 [View `account_service.py` on GitHub](https://github.com/namansinghpatel/Mini_Bank_System/blob/main/Backend/account_service.py)
 
 ---
 
@@ -1378,7 +1378,7 @@ The Authentication Service handles:
 - Account locking
 - Login-attempt reset
 
-🔗 [View `auth_service.py` on GitHub](https://github.com/namansinghpatel/Python_Progs/blob/main/Python_Codes/Mini_Bank_System/Backend/auth_service.py)
+🔗 [View `auth_service.py` on GitHub](https://github.com/namansinghpatel/Mini_Bank_System/blob/main/Backend/auth_service.py)
 
 ---
 
@@ -1386,7 +1386,7 @@ The Authentication Service handles:
 
 The validation layer contains reusable validation rules used throughout the application.
 
-🔗 [View `validators.py` on GitHub](https://github.com/namansinghpatel/Python_Progs/blob/main/Python_Codes/Mini_Bank_System/Backend/validators.py)
+🔗 [View `validators.py` on GitHub](https://github.com/namansinghpatel/Mini_Bank_System/blob/main/Backend/validators.py)
 
 ---
 
@@ -1394,7 +1394,7 @@ The validation layer contains reusable validation rules used throughout the appl
 
 The security module contains password hashing and password verification functionality using bcrypt.
 
-🔗 [View `security.py` on GitHub](https://github.com/namansinghpatel/Python_Progs/blob/main/Python_Codes/Mini_Bank_System/Backend/security.py)
+🔗 [View `security.py` on GitHub](https://github.com/namansinghpatel/Mini_Bank_System/blob/main/Backend/security.py)
 
 ---
 
@@ -1417,7 +1417,7 @@ The Database layer contains the SQLite operations for:
 - Account deletion
 - Login-attempt handling
 
-🔗 [View `sqlitedb.py` on GitHub](https://github.com/namansinghpatel/Python_Progs/blob/main/Python_Codes/Mini_Bank_System/Database/sqlitedb.py)
+🔗 [View `sqlitedb.py` on GitHub](https://github.com/namansinghpatel/Mini_Bank_System/blob/main/Database/sqlitedb.py)
 
 ---
 
