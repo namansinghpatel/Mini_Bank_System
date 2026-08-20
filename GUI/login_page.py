@@ -10,16 +10,28 @@ from PyQt6.QtWidgets import (
     QFrame,
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
 from Backend.auth_service import login_user
+from pathlib import Path
 
 
 class LoginPage(QWidget):
 
     def __init__(self, stack):
-
         super().__init__()
-
         self.stack = stack
+
+        # --------------------------------
+        # Background Image
+        # --------------------------------
+
+        project_root = Path(__file__).resolve().parent.parent
+        background_path = (project_root / "Docs" / "Images" / "GUI" / "bank_background.png")
+        self.background_label = QLabel(self)
+        self.background_pixmap = QPixmap(str(background_path))
+        self.background_label.setPixmap(self.background_pixmap)
+        self.background_label.setScaledContents(False)
+        self.background_label.lower()
 
         # --------------------------------
         # Main Page Layout
@@ -34,13 +46,14 @@ class LoginPage(QWidget):
 
         title = QLabel("🏦 XYZ Banking System")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         title.setStyleSheet("""
             QLabel {
                 font-size: 28px;
                 font-weight: bold;
-                color: #1565C0;
+                color: white;
                 padding: 10px;
+                background-color: rgba(0, 0, 0, 80);
+                border-radius: 8px;
             }
         """)
 
@@ -50,10 +63,9 @@ class LoginPage(QWidget):
 
         login_card = QFrame()
         login_card.setFixedWidth(380)
-
         login_card.setStyleSheet("""
             QFrame {
-                background-color: white;
+                background-color: rgba(255, 255, 255, 240);
                 border: 1px solid #D0D7DE;
                 border-radius: 15px;
             }
@@ -66,7 +78,6 @@ class LoginPage(QWidget):
         card_layout = QVBoxLayout()
         card_layout.setContentsMargins(35, 30, 35, 30)
         card_layout.setSpacing(15)
-
         login_card.setLayout(card_layout)
 
         # --------------------------------
@@ -74,17 +85,14 @@ class LoginPage(QWidget):
         # --------------------------------
 
         login_title = QLabel("Welcome Back")
-
-        login_title.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )
-
+        login_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         login_title.setStyleSheet("""
             QLabel {
                 font-size: 24px;
                 font-weight: bold;
                 color: #1565C0;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -93,13 +101,13 @@ class LoginPage(QWidget):
         # --------------------------------
 
         username_label = QLabel("Username")
-
         username_label.setStyleSheet("""
             QLabel {
                 font-size: 14px;
                 font-weight: bold;
                 color: #333333;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -110,7 +118,6 @@ class LoginPage(QWidget):
         self.username = QLineEdit()
         self.username.setPlaceholderText("Enter your username")
         self.username.setFixedHeight(42)
-
         self.username.setStyleSheet("""
             QLineEdit {
                 border: 1px solid #B0BEC5;
@@ -119,7 +126,6 @@ class LoginPage(QWidget):
                 font-size: 15px;
                 background-color: white;
             }
-
             QLineEdit:focus {
                 border: 2px solid #1565C0;
             }
@@ -130,13 +136,13 @@ class LoginPage(QWidget):
         # --------------------------------
 
         password_label = QLabel("Password")
-
         password_label.setStyleSheet("""
             QLabel {
                 font-size: 14px;
                 font-weight: bold;
                 color: #333333;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -146,11 +152,8 @@ class LoginPage(QWidget):
 
         self.password = QLineEdit()
         self.password.setPlaceholderText("Enter your password")
-        self.password.setEchoMode(
-            QLineEdit.EchoMode.Password
-        )
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.password.setFixedHeight(42)
-
         self.password.setStyleSheet("""
             QLineEdit {
                 border: 1px solid #B0BEC5;
@@ -159,7 +162,6 @@ class LoginPage(QWidget):
                 font-size: 15px;
                 background-color: white;
             }
-
             QLineEdit:focus {
                 border: 2px solid #1565C0;
             }
@@ -171,7 +173,6 @@ class LoginPage(QWidget):
 
         self.show_password_btn = QPushButton("👁")
         self.show_password_btn.setFixedSize(42, 42)
-
         self.show_password_btn.setStyleSheet("""
             QPushButton {
                 background-color: #ECEFF1;
@@ -179,15 +180,11 @@ class LoginPage(QWidget):
                 border-radius: 7px;
                 font-size: 17px;
             }
-
             QPushButton:hover {
                 background-color: #CFD8DC;
             }
         """)
-
-        self.show_password_btn.clicked.connect(
-            self.toggle_password
-        )
+        self.show_password_btn.clicked.connect(self.toggle_password)
 
         # --------------------------------
         # Password Layout
@@ -195,11 +192,8 @@ class LoginPage(QWidget):
 
         password_layout = QHBoxLayout()
         password_layout.setSpacing(6)
-
         password_layout.addWidget(self.password)
-        password_layout.addWidget(
-            self.show_password_btn
-        )
+        password_layout.addWidget(self.show_password_btn)
 
         # --------------------------------
         # Login Button
@@ -207,7 +201,6 @@ class LoginPage(QWidget):
 
         login_btn = QPushButton("Login")
         login_btn.setFixedHeight(45)
-
         login_btn.setStyleSheet("""
             QPushButton {
                 background-color: #1565C0;
@@ -217,30 +210,21 @@ class LoginPage(QWidget):
                 font-size: 16px;
                 font-weight: bold;
             }
-
             QPushButton:hover {
                 background-color: #1E88E5;
             }
-
             QPushButton:pressed {
                 background-color: #0D47A1;
             }
         """)
-
-        login_btn.clicked.connect(
-            self.login_clicked
-        )
+        login_btn.clicked.connect(self.login_clicked)
 
         # --------------------------------
         # Create Account Button
         # --------------------------------
 
-        create_btn = QPushButton(
-            "Create New Account"
-        )
-
+        create_btn = QPushButton("Create New Account")
         create_btn.setFixedHeight(42)
-
         create_btn.setStyleSheet("""
             QPushButton {
                 background-color: white;
@@ -255,19 +239,14 @@ class LoginPage(QWidget):
                 background-color: #E3F2FD;
             }
         """)
-
-        create_btn.clicked.connect(
-            self.create_account_clicked
-        )
+        create_btn.clicked.connect(self.create_account_clicked)
 
         # --------------------------------
         # Exit Button
         # --------------------------------
 
         exit_btn = QPushButton("❌ Exit")
-
         exit_btn.setFixedHeight(40)
-
         exit_btn.setStyleSheet("""
             QPushButton {
                 background-color: transparent;
@@ -280,27 +259,19 @@ class LoginPage(QWidget):
                 color: #D32F2F;
             }
         """)
-
-        exit_btn.clicked.connect(
-            self.exit_application
-        )
+        exit_btn.clicked.connect(self.exit_application)
 
         # --------------------------------
         # Add Widgets To Card
         # --------------------------------
 
         card_layout.addWidget(login_title)
-
         card_layout.addSpacing(10)
-
         card_layout.addWidget(username_label)
         card_layout.addWidget(self.username)
-
         card_layout.addWidget(password_label)
         card_layout.addLayout(password_layout)
-
         card_layout.addSpacing(10)
-
         card_layout.addWidget(login_btn)
         card_layout.addWidget(create_btn)
         card_layout.addWidget(exit_btn)
@@ -313,10 +284,7 @@ class LoginPage(QWidget):
 
         main_layout.addStretch()
 
-        main_layout.addWidget(
-            login_card,
-            alignment=Qt.AlignmentFlag.AlignCenter
-        )
+        main_layout.addWidget(login_card, alignment=Qt.AlignmentFlag.AlignCenter)
 
         main_layout.addStretch()
 
@@ -324,19 +292,17 @@ class LoginPage(QWidget):
         # Footer
         # --------------------------------
 
-        footer = QLabel(
-            "Secure Banking • XYZ Bank"
-        )
+        footer = QLabel("Secure Banking • XYZ Bank")
 
-        footer.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )
+        footer.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         footer.setStyleSheet("""
             QLabel {
-                color: #78909C;
+                color: white;
                 font-size: 12px;
                 padding: 8px;
+                background-color: rgba(0, 0, 0, 80);
+                border-radius: 5px;
             }
         """)
 
@@ -354,58 +320,53 @@ class LoginPage(QWidget):
 
         self.setStyleSheet("""
             LoginPage {
-                background-color: #F5F7FA;
+                background-color: #263238;
             }
         """)
+
+    # --------------------------------
+    # Resize Background Image
+    # --------------------------------
+
+    def resizeEvent(self, event):
+        if not self.background_pixmap.isNull():
+            scaled_pixmap = self.background_pixmap.scaled(
+                self.size(),
+               Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                Qt.TransformationMode.SmoothTransformation,)
+            self.background_label.setPixmap(scaled_pixmap)
+            self.background_label.setGeometry(self.rect())
+        super().resizeEvent(event)
 
     # --------------------------------
     # Login
     # --------------------------------
 
     def login_clicked(self):
-
         username = self.username.text()
         password = self.password.text()
-
-        success, result = login_user(
-            username,
-            password
-        )
+        success, result = login_user(username, password)
 
         if success:
-
-            QMessageBox.information(
-                self,
-                "Success",
-                result["message"]
-            )
+            QMessageBox.information(self, "Success", result["message"])
 
             # Get Welcome Page
             welcome_page = self.stack.widget(2)
 
             # Pass logged-in user details
-            welcome_page.set_user_details(
-                result["username"],
-                result["account_number"]
-            )
+            welcome_page.set_user_details(result["username"], result["account_number"])
 
             # Open Welcome Page
             self.stack.setCurrentIndex(2)
 
         else:
-
-            QMessageBox.warning(
-                self,
-                "Login Failed",
-                result
-            )
+            QMessageBox.warning(self, "Login Failed", result["message"])
 
     # --------------------------------
     # Create Account
     # --------------------------------
 
     def create_account_clicked(self):
-
         self.stack.setCurrentIndex(1)
 
     # --------------------------------
@@ -413,30 +374,16 @@ class LoginPage(QWidget):
     # --------------------------------
 
     def exit_application(self):
-
         QApplication.quit()
 
     # --------------------------------
     # Toggle Password
-    # --------------------------------
+    # -------------------------------
 
     def toggle_password(self):
-
-        if (
-            self.password.echoMode()
-            == QLineEdit.EchoMode.Password
-        ):
-
-            self.password.setEchoMode(
-                QLineEdit.EchoMode.Normal
-            )
-
+        if self.password.echoMode() == QLineEdit.EchoMode.Password:
+            self.password.setEchoMode(QLineEdit.EchoMode.Normal)
             self.show_password_btn.setText("🙈")
-
         else:
-
-            self.password.setEchoMode(
-                QLineEdit.EchoMode.Password
-            )
-
+            self.password.setEchoMode(QLineEdit.EchoMode.Password)
             self.show_password_btn.setText("👁")

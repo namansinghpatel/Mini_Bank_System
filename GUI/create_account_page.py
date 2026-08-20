@@ -9,7 +9,9 @@ from PyQt6.QtWidgets import (
     QFrame,
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
 from Backend.auth_service import create_user
+from pathlib import Path
 
 
 class CreateAccountPage(QWidget):
@@ -21,17 +23,54 @@ class CreateAccountPage(QWidget):
         self.stack = stack
 
         # --------------------------------
+        # Background Image
+        # --------------------------------
+
+        project_root = Path(__file__).resolve().parent.parent
+
+        background_path = (
+            project_root
+            / "Docs"
+            / "Images"
+            / "GUI"
+            / "bank_background.png"
+        )
+
+        self.background_label = QLabel(self)
+
+        self.background_pixmap = QPixmap(
+            str(background_path)
+        )
+
+        self.background_label.setPixmap(
+            self.background_pixmap
+        )
+
+        self.background_label.setScaledContents(False)
+
+        # Put background behind all other widgets
+        self.background_label.lower()
+
+        # --------------------------------
         # Main Page Layout
         # --------------------------------
 
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(30, 20, 30, 20)
+
+        main_layout.setContentsMargins(
+            30,
+            20,
+            30,
+            20
+        )
 
         # --------------------------------
         # Bank Title
         # --------------------------------
 
-        title = QLabel("🏦 XYZ Banking System")
+        title = QLabel(
+            "🏦 XYZ Banking System"
+        )
 
         title.setAlignment(
             Qt.AlignmentFlag.AlignCenter
@@ -41,8 +80,10 @@ class CreateAccountPage(QWidget):
             QLabel {
                 font-size: 28px;
                 font-weight: bold;
-                color: #1565C0;
+                color: white;
                 padding: 10px;
+                background-color: rgba(0, 0, 0, 80);
+                border-radius: 8px;
             }
         """)
 
@@ -56,7 +97,7 @@ class CreateAccountPage(QWidget):
 
         account_card.setStyleSheet("""
             QFrame {
-                background-color: white;
+                background-color: rgba(255, 255, 255, 240);
                 border: 1px solid #D0D7DE;
                 border-radius: 15px;
             }
@@ -77,7 +118,9 @@ class CreateAccountPage(QWidget):
 
         card_layout.setSpacing(15)
 
-        account_card.setLayout(card_layout)
+        account_card.setLayout(
+            card_layout
+        )
 
         # --------------------------------
         # Card Title
@@ -97,6 +140,7 @@ class CreateAccountPage(QWidget):
                 font-weight: bold;
                 color: #1565C0;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -114,6 +158,7 @@ class CreateAccountPage(QWidget):
                 font-weight: bold;
                 color: #333333;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -127,7 +172,9 @@ class CreateAccountPage(QWidget):
             "Enter your username"
         )
 
-        self.username.setFixedHeight(42)
+        self.username.setFixedHeight(
+            42
+        )
 
         self.username.setStyleSheet("""
             QLineEdit {
@@ -157,6 +204,7 @@ class CreateAccountPage(QWidget):
                 font-weight: bold;
                 color: #333333;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -174,7 +222,9 @@ class CreateAccountPage(QWidget):
             QLineEdit.EchoMode.Password
         )
 
-        self.password.setFixedHeight(42)
+        self.password.setFixedHeight(
+            42
+        )
 
         self.password.setStyleSheet("""
             QLineEdit {
@@ -250,6 +300,7 @@ class CreateAccountPage(QWidget):
                 font-weight: bold;
                 color: #333333;
                 border: none;
+                background: transparent;
             }
         """)
 
@@ -267,7 +318,9 @@ class CreateAccountPage(QWidget):
             QLineEdit.EchoMode.Password
         )
 
-        self.repassword.setFixedHeight(42)
+        self.repassword.setFixedHeight(
+            42
+        )
 
         self.repassword.setStyleSheet("""
             QLineEdit {
@@ -291,7 +344,9 @@ class CreateAccountPage(QWidget):
             "Create Account"
         )
 
-        submit_btn.setFixedHeight(45)
+        submit_btn.setFixedHeight(
+            45
+        )
 
         submit_btn.setStyleSheet("""
             QPushButton {
@@ -324,7 +379,9 @@ class CreateAccountPage(QWidget):
             "⬅ Back to Login"
         )
 
-        back_btn.setFixedHeight(40)
+        back_btn.setFixedHeight(
+            40
+        )
 
         back_btn.setStyleSheet("""
             QPushButton {
@@ -353,7 +410,9 @@ class CreateAccountPage(QWidget):
             account_title
         )
 
-        card_layout.addSpacing(10)
+        card_layout.addSpacing(
+            10
+        )
 
         card_layout.addWidget(
             username_label
@@ -379,7 +438,9 @@ class CreateAccountPage(QWidget):
             self.repassword
         )
 
-        card_layout.addSpacing(10)
+        card_layout.addSpacing(
+            10
+        )
 
         card_layout.addWidget(
             submit_btn
@@ -420,37 +481,77 @@ class CreateAccountPage(QWidget):
 
         footer.setStyleSheet("""
             QLabel {
-                color: #78909C;
+                color: white;
                 font-size: 12px;
                 padding: 8px;
+                background-color: rgba(0, 0, 0, 80);
+                border-radius: 5px;
             }
         """)
+
         main_layout.addWidget(
-            footer)
+            footer
+        )
+
         # --------------------------------
         # Set Main Layout
         # --------------------------------
+
         self.setLayout(
-            main_layout)
-        # -------------------------------
+            main_layout
+        )
+
+        # --------------------------------
         # Page Background
         # --------------------------------
+
         self.setStyleSheet("""
             CreateAccountPage {
-                background-color: #F5F7FA;
+                background-color: #263238;
             }
         """)
+
+    # --------------------------------
+    # Resize Background Image
+    # --------------------------------
+
+    def resizeEvent(self, event):
+
+        if not self.background_pixmap.isNull():
+
+            scaled_pixmap = self.background_pixmap.scaled(
+                self.size(),
+                Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                Qt.TransformationMode.SmoothTransformation
+            )
+
+            self.background_label.setPixmap(
+                scaled_pixmap
+            )
+
+            self.background_label.setGeometry(
+                self.rect()
+            )
+
+        super().resizeEvent(event)
+
     # --------------------------------
     # Submit
     # --------------------------------
+
     def submit_clicked(self):
+
         username = self.username.text()
+
         password = self.password.text()
+
         re_password = self.repassword.text()
+
         success, message = create_user(
             username,
             password,
-            re_password)
+            re_password
+        )
 
         if success:
 
